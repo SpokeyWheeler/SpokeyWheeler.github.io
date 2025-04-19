@@ -1,7 +1,7 @@
 baseURL = 'https://spokey.co.uk/'
 languageCode = 'en-us'
 title = 'Blog'
-theme = 'github-style'
+theme = 'github-style-spokey'
 pygmentsCodeFences = true
 pygmentsUseClasses = true
 
