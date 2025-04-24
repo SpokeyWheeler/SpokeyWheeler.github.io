@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <script type="application/javascript" src='https://spokey.co.uk/js/theme-mode.js'></script>
+    <link rel="stylesheet" href='https://spokey.co.uk/css/frameworks.min.css' />
+    <link rel="stylesheet" href='https://spokey.co.uk/css/github.min.css' />
+    <link rel="stylesheet" href='https://spokey.co.uk/css/github-style.css' />
+    <link rel="stylesheet" href='https://spokey.co.uk/css/light.css' />
+    <link rel="stylesheet" href='https://spokey.co.uk/css/dark.css' />
+    <link rel="stylesheet" href='https://spokey.co.uk/css/syntax.css' />
+    <title>Query Performance Improvement Part 4 - Blog</title>
+    
+    <link rel="icon" type="image/x-icon" href='/images/avatar.png'>
+    
+    <meta name="theme-color" content="#1e2327">
+
+    <link rel="stylesheet" href="https://spokey.co.uk/css/custom.css">
+    <script type="text/javascript" src="https://spokey.co.uk/js/custom.js"></script>
+
+    
+    <meta name="description"
+  content="Overview Part 1 looks at some principles and introduces some of the tools in your arsenal.
+Part 2 covers the dreaded PostgreSQL bloat issue as well as how TOAST can help performance, or hinder it.
+Part 3 dives deeper into identifying, investigating and mitigating slow queries.
+Part 4 (this post) covers indexing.
+Part 5 covers rewriting queries.
+TL;DR If you see &ldquo;Filter:&rdquo; or &ldquo;Rows Removed&rdquo; in your explain plan, you are likely to be using the wrong index Composite indexes can be much faster than multiple single indexes Partial indexes reduce the height and size of the index, making them faster Covering indexes can speed queries even further The bigger the table, the more likely it is that an index will add value Small tables are often sequentially scanned, whether indexed or not Small to medium tables tend to benefit from single column indexes, less from more complex indexes Large tables tend to benefit more from complex indexes Always test before pushing to production! Indexes Indexes are one of the most effective tools to improve query performance. Indexes work best when they return a small subset of data and are small compared to row size. So an 8-byte integer index on a 2kB row is more efficient than a 1kB text index on a 1.5kB row.
+" />
+<meta name="keywords"
+  content='blog, google analytics' />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="https://spokey.co.uk/post/query-performance-improvement-part-4/" />
+
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Query Performance Improvement Part 4 - Blog" />
+<meta name="twitter:description"
+  content="Overview Part 1 looks at some principles and introduces some of the tools in your arsenal.
+Part 2 covers the dreaded PostgreSQL bloat issue as well as how TOAST can help performance, or hinder it.
+Part 3 dives deeper into identifying, investigating and mitigating slow queries.
+Part 4 (this post) covers indexing.
+Part 5 covers rewriting queries.
+TL;DR If you see &ldquo;Filter:&rdquo; or &ldquo;Rows Removed&rdquo; in your explain plan, you are likely to be using the wrong index Composite indexes can be much faster than multiple single indexes Partial indexes reduce the height and size of the index, making them faster Covering indexes can speed queries even further The bigger the table, the more likely it is that an index will add value Small tables are often sequentially scanned, whether indexed or not Small to medium tables tend to benefit from single column indexes, less from more complex indexes Large tables tend to benefit more from complex indexes Always test before pushing to production! Indexes Indexes are one of the most effective tools to improve query performance. Indexes work best when they return a small subset of data and are small compared to row size. So an 8-byte integer index on a 2kB row is more efficient than a 1kB text index on a 1.5kB row.
+" />
+<meta name="twitter:site" content="https://spokey.co.uk/" />
+<meta name="twitter:creator" content="" />
+<meta name="twitter:image"
+  content="https://spokey.co.uk/">
+
+
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Query Performance Improvement Part 4 - Blog">
+<meta property="og:description"
+  content="Overview Part 1 looks at some principles and introduces some of the tools in your arsenal.
+Part 2 covers the dreaded PostgreSQL bloat issue as well as how TOAST can help performance, or hinder it.
+Part 3 dives deeper into identifying, investigating and mitigating slow queries.
+Part 4 (this post) covers indexing.
+Part 5 covers rewriting queries.
+TL;DR If you see &ldquo;Filter:&rdquo; or &ldquo;Rows Removed&rdquo; in your explain plan, you are likely to be using the wrong index Composite indexes can be much faster than multiple single indexes Partial indexes reduce the height and size of the index, making them faster Covering indexes can speed queries even further The bigger the table, the more likely it is that an index will add value Small tables are often sequentially scanned, whether indexed or not Small to medium tables tend to benefit from single column indexes, less from more complex indexes Large tables tend to benefit more from complex indexes Always test before pushing to production! Indexes Indexes are one of the most effective tools to improve query performance. Indexes work best when they return a small subset of data and are small compared to row size. So an 8-byte integer index on a 2kB row is more efficient than a 1kB text index on a 1.5kB row.
+" />
+<meta property="og:url" content="https://spokey.co.uk/post/query-performance-improvement-part-4/" />
+<meta property="og:site_name" content="Query Performance Improvement Part 4" />
+<meta property="og:image"
+  content="https://spokey.co.uk/">
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+<meta property="article:published_time" content="2025-04-23 12:07:01 &#43;0100 BST" />
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+
+<body>
+  <div style="position: relative">
+  <header class="Header js-details-container Details px-3 px-md-4 px-lg-5 flex-wrap flex-md-nowrap open Details--on">
+    <div class="Header-item mobile-none" style="margin-top: -4px; margin-bottom: -4px;">
+      <a class="Header-link" href="https://spokey.co.uk/">
+        <img class="octicon" height="32" width="32" src="/images/fluidicon.png">
+      </a>
+    </div>
+    <div class="Header-item d-md-none">
+      <button class="Header-link btn-link js-details-target" type="button"
+        onclick="document.querySelector('#header-search').style.display = document.querySelector('#header-search').style.display == 'none'? 'block': 'none'">
+        <svg height="24" class="octicon octicon-three-bars" viewBox="0 0 16 16" version="1.1" width="24">
+          <path fill-rule="evenodd" d="M1 2.75A.75.75 0 011.75 2h12.5a.75.75 0 110 1.5H1.75A.75.75 0 011 2.75zm0 5A.75.75 0 011.75 7h12.5a.75.75 0 110 1.5H1.75A.75.75 0 011 7.75zM1.75 12a.75.75 0 100 1.5h12.5a.75.75 0 100-1.5H1.75z">
+          </path>
+        </svg>
+      </button>
+    </div>
+    <div style="display: none;" id="header-search"
+      class="Header-item Header-item--full flex-column flex-md-row width-full flex-order-2 flex-md-order-none mr-0 mr-md-3 mt-3 mt-md-0 Details-content--hidden-not-important d-md-flex">
+      <div
+        class="Header-search header-search flex-auto js-site-search position-relative flex-self-stretch flex-md-self-auto mb-3 mb-md-0 mr-0 mr-md-3 scoped-search site-scoped-search js-jump-to">
+        <div class="position-relative">
+          
+          <form target="_blank" action="https://www.google.com/search" accept-charset="UTF-8" method="get"
+            autocomplete="off">
+            <label
+              class="Header-search-label form-control input-sm header-search-wrapper p-0 js-chromeless-input-container header-search-wrapper-jump-to position-relative d-flex flex-justify-between flex-items-center">
+              <input type="text"
+                class="Header-search-input form-control input-sm header-search-input jump-to-field js-jump-to-field js-site-search-focus js-site-search-field is-clearable"
+                name="q" value="" placeholder="Search" autocomplete="off">
+              <input type="hidden" name="q" value="site:https://spokey.co.uk/">
+            </label>
+          </form>
+          
+        </div>
+      </div>
+    </div>
+
+    <div class="Header-item Header-item--full flex-justify-center d-md-none position-relative">
+      <a class="Header-link " href="https://spokey.co.uk/">
+        <img class="octicon octicon-mark-github v-align-middle" height="32" width="32" src="/images/fluidicon.png">
+      </a>
+    </div>
+    <div class="Header-item" style="margin-right: 0;">
+      <a href="javascript:void(0)" class="Header-link no-select" onclick="switchTheme()">
+        <svg style="fill: var(--color-profile-color-modes-toggle-moon);" class="no-select" viewBox="0 0 16 16"
+          version="1.1" width="16" height="16">
+          <path fill-rule="evenodd" clip-rule="evenodd"
+            d="M4.52208 7.71754C7.5782 7.71754 10.0557 5.24006 10.0557 2.18394C10.0557 1.93498 10.0392 1.68986 10.0074 1.44961C9.95801 1.07727 10.3495 0.771159 10.6474 0.99992C12.1153 2.12716 13.0615 3.89999 13.0615 5.89383C13.0615 9.29958 10.3006 12.0605 6.89485 12.0605C3.95334 12.0605 1.49286 10.001 0.876728 7.24527C0.794841 6.87902 1.23668 6.65289 1.55321 6.85451C2.41106 7.40095 3.4296 7.71754 4.52208 7.71754Z">
+          </path>
+        </svg>
+      </a>
+    </div>
+  </header>
+</div>
+
+  <div id="search-result" class="container-lg px-3 new-discussion-timeline" style="display: none;">
+</div>
+
+  
+<div class="application-main">
+  <div>
+  <main>
+    <div class="gisthead pagehead bg-gray-light pb-0 pt-3 mb-4">
+      <div class="px-0">
+        <div class="mb-3 d-flex px-3 px-md-3 px-lg-5">
+          <div class="flex-auto min-width-0 width-fit mr-3">
+            <div class="d-flex">
+              <div class="d-none d-md-block">
+                <a class="avatar mr-2 flex-shrink-0" href="https://spokey.co.uk/">
+                  <img class=" avatar-user"
+                    src="/images/avatar.png"
+                    width="32" height="32"></a>
+              </div>
+              <div class="d-flex flex-column">
+                <h1 class="break-word f3 text-normal mb-md-0 mb-1">
+                  <span class="author">
+                    <a href="https://spokey.co.uk/">SpokeyWheeler</a>
+                  </span>
+                  <span class="path-divider">/</span>
+                  <strong class="css-truncate css-truncate-target mr-1" style="max-width: 410px">
+                    <a href="https://spokey.co.uk/post/query-performance-improvement-part-4/">Query Performance Improvement Part 4</a>
+                  </strong>
+                </h1>
+                <div class="note m-0">
+                  Created <relative-time datetime="Wed, 23 Apr 2025 12:07:01 &#43;0100"
+                    class="no-wrap">
+                    Wed, 23 Apr 2025 12:07:01 &#43;0100</relative-time>
+
+                  
+                  <span class="file-info-divider"></span>
+                  Modified <relative-time datetime="Thu, 24 Apr 2025 13:56:54 &#43;0100"
+                    class="no-wrap">
+                    Thu, 24 Apr 2025 13:56:54 &#43;0100</relative-time>
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-lg px-3 new-discussion-timeline">
+      <div class="repository-content gist-content">
+        <div>
+          <div class="js-gist-file-update-container js-task-list-container file-box">
+            <div id="file-pytest" class="file my-2">
+              <div id="post-header" class="file-header d-flex flex-md-items-center flex-items-start sticky-header" style="z-index: 2">
+                <div class="file-info d-flex flex-md-items-center flex-items-start flex-order-1 flex-auto">
+                  <div class="text-mono f6 flex-auto pr-3 flex-order-2 flex-md-order-1 mt-2 mt-md-0">
+                    
+                    <summary id="toc-toggle" onclick="clickToc()" class="btn btn-octicon m-0 mr-2 p-2">
+                      <svg aria-hidden="true" viewBox="0 0 16 16" height="16" width="16" class="octicon octicon-list-unordered">
+                        <path fill-rule="evenodd" d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z"></path>
+                      </svg>
+                    </summary>
+                    <details-menu class="SelectMenu" id="toc-details" style="display: none;">
+                      <div class="SelectMenu-modal rounded-3 mt-1" style="max-height: 340px;">
+                        <div class="SelectMenu-list SelectMenu-list--borderless p-2" style="overscroll-behavior: contain;" id="toc-list">
+                        </div>
+                      </div>
+                    </details-menu>
+                      2040 Words
+                    
+
+                  </div>
+                  <div class="file-actions flex-order-2 pt-0">
+                    
+                    
+                    <a class="muted-link mr-3" href="/tags/postgresql">
+                      <svg class="octicon octicon-tag" viewBox="0 0 16 16" version="1.1" width="16" height="16">
+                        <path fill-rule="evenodd"
+                          d="M2.5 7.775V2.75a.25.25 0 01.25-.25h5.025a.25.25 0 01.177.073l6.25 6.25a.25.25 0 010 .354l-5.025 5.025a.25.25 0 01-.354 0l-6.25-6.25a.25.25 0 01-.073-.177zm-1.5 0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 010 2.474l-5.026 5.026a1.75 1.75 0 01-2.474 0l-6.25-6.25A1.75 1.75 0 011 7.775zM6 5a1 1 0 100 2 1 1 0 000-2z">
+                        </path>
+                      </svg>
+                      postgresql
+                    </a>
+                    
+                    <a class="muted-link mr-3" href="/tags/performance">
+                      <svg class="octicon octicon-tag" viewBox="0 0 16 16" version="1.1" width="16" height="16">
+                        <path fill-rule="evenodd"
+                          d="M2.5 7.775V2.75a.25.25 0 01.25-.25h5.025a.25.25 0 01.177.073l6.25 6.25a.25.25 0 010 .354l-5.025 5.025a.25.25 0 01-.354 0l-6.25-6.25a.25.25 0 01-.073-.177zm-1.5 0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 010 2.474l-5.026 5.026a1.75 1.75 0 01-2.474 0l-6.25-6.25A1.75 1.75 0 011 7.775zM6 5a1 1 0 100 2 1 1 0 000-2z">
+                        </path>
+                      </svg>
+                      performance
+                    </a>
+                    
+                    
+                  </div>
+                </div>
+              </div>
+
+
+              <div class="Box-body px-5 pb-5" style="z-index: 1">
+                <article class="markdown-body entry-content container-lg"><h1 id="overview">Overview</h1>
+<p><a href="/post/query-performance-improvement-part-1">Part 1</a> looks at some principles and introduces some of the tools in your arsenal.</p>
+<p><a href="/post/query-performance-improvement-part-2">Part 2</a> covers the dreaded PostgreSQL bloat issue as well as how TOAST can help performance, or hinder it.</p>
+<p><a href="/post/query-performance-improvement-part-3">Part 3</a> dives deeper into identifying, investigating and mitigating slow queries.</p>
+<p>Part 4 (this post) covers indexing.</p>
+<p><a href="/post/query-performance-improvement-part-5">Part 5</a> covers rewriting queries.</p>
+<h1 id="tldr">TL;DR</h1>
+<ul>
+<li>If you see &ldquo;Filter:&rdquo; or &ldquo;Rows Removed&rdquo; in your explain plan, you are likely to be using the wrong index</li>
+<li>Composite indexes can be much faster than multiple single indexes</li>
+<li>Partial indexes reduce the height and size of the index, making them faster</li>
+<li>Covering indexes can speed queries even further</li>
+<li>The bigger the table, the more likely it is that an index will add value</li>
+<li>Small tables are often sequentially scanned, whether indexed or not</li>
+<li>Small to medium tables tend to benefit from single column indexes, less from more complex indexes</li>
+<li>Large tables tend to benefit more from complex indexes</li>
+<li>Always test before pushing to production!</li>
+</ul>
+<h1 id="indexes">Indexes</h1>
+<p>Indexes are one of the most effective tools to improve query performance. Indexes work best when they return a small subset of data and are small compared to row size. So an 8-byte integer index on a 2kB row is more efficient than a 1kB text index on a 1.5kB row.</p>
+<p>However, sometimes the gains from composite indexes or covering indexes can outweigh the efficiency ratio.</p>
+<h2 id="the-right-index">The RIGHT index?</h2>
+<p>This is often (very often!) the big knowledge gap in query tuning: an inexperienced person will examine a query plan, see that it&rsquo;s using an index and assume that the query is therefore optimised. This is often not the case. If you carefully examine the explain plan and find that it says &ldquo;Filter: &quot; and / or a large number of &ldquo;Rows Removed&rdquo;, then your indexing is almost certainly suboptimal.</p>
+<p>This very much depends on the size of the data set being queried. For small tables, PostgreSQL will often just scan the table because it is faster than traversing the index. As the table grows, the index becomes more valuable. In medium-sized tables, a single column index and discarding rows can be faster than the overhead of traversing a larger composite index. You can possibly mitigate this by having a partial index covering only the section of the table you are interested in. Only with very large tables is it likely for a complex index to have an unequivocal effect.</p>
+<h2 id="composite-indexes">Composite indexes</h2>
+<p>PostgreSQL can use multiple single-column indexes to satisfy a query.</p>
+<pre tabindex="0"><code>bench=# \d pgbench_accounts
+              Table &#34;public.pgbench_accounts&#34;
+  Column  |     Type      | Collation | Nullable | Default
+----------+---------------+-----------+----------+---------
+ aid      | integer       |           | not null |
+ bid      | integer       |           |          |
+ abalance | integer       |           |          |
+ filler   | character(84) |           |          |
+Indexes:
+    &#34;pgbench_accounts_pkey&#34; PRIMARY KEY, btree (aid)
+Foreign-key constraints:
+    &#34;pgbench_accounts_bid_fkey&#34; FOREIGN KEY (bid) REFERENCES pgbench_branches(bid)
+Referenced by:
+    TABLE &#34;pgbench_history&#34; CONSTRAINT &#34;pgbench_history_aid_fkey&#34; FOREIGN KEY (aid) REFERENCES pgbench_accounts(aid)
+
+bench=# explain (analyze, buffers, costs, settings, verbose) select count(*) from pgbench_accounts where aid &gt;0 and aid &lt; 194999 and abalance &lt; -4500 and abalance &gt; -5000;
+                                                                                     QUERY PLAN
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize Aggregate  (cost=60200.96..60200.97 rows=1 width=8) (actual time=52.971..57.025 rows=1 loops=1)
+   Output: count(*)
+   Buffers: shared hit=14648
+   -&gt;  Gather  (cost=60200.75..60200.96 rows=2 width=8) (actual time=52.671..57.005 rows=3 loops=1)
+         Output: (PARTIAL count(*))
+         Workers Planned: 2
+         Workers Launched: 2
+         Buffers: shared hit=14648
+         -&gt;  Partial Aggregate  (cost=59200.75..59200.76 rows=1 width=8) (actual time=29.864..29.866 rows=1 loops=3)
+               Output: PARTIAL count(*)
+               Buffers: shared hit=14648
+               Worker 0:  actual time=20.344..20.346 rows=1 loops=1
+                 Buffers: shared hit=2914
+               Worker 1:  actual time=20.943..20.945 rows=1 loops=1
+                 Buffers: shared hit=2944
+               -&gt;  Parallel Index Scan using pgbench_accounts_pkey on public.pgbench_accounts  (cost=0.43..59197.26 rows=1394 width=0) (actual time=0.254..29.601 rows=1127 loops=3)
+                     Output: aid, bid, abalance, filler
+                     Index Cond: ((pgbench_accounts.aid &gt; 0) AND (pgbench_accounts.aid &lt; 194999))
+                     Filter: ((pgbench_accounts.abalance &lt; &#39;-4500&#39;::integer) AND (pgbench_accounts.abalance &gt; &#39;-5000&#39;::integer))
+                     Rows Removed by Filter: 63872
+                     Buffers: shared hit=14648
+                     Worker 0:  actual time=0.307..20.183 rows=674 loops=1
+                       Buffers: shared hit=2914
+                     Worker 1:  actual time=0.369..20.770 rows=678 loops=1
+                       Buffers: shared hit=2944
+ Planning:
+   Buffers: shared hit=10
+ Planning Time: 0.846 ms
+ Execution Time: 57.097 ms
+(29 rows)
+
+Time: 58.965 ms
+
+bench=# \d pgbench_accounts
+              Table &#34;public.pgbench_accounts&#34;
+  Column  |     Type      | Collation | Nullable | Default
+----------+---------------+-----------+----------+---------
+ aid      | integer       |           | not null |
+ bid      | integer       |           |          |
+ abalance | integer       |           |          |
+ filler   | character(84) |           |          |
+Indexes:
+    &#34;pgbench_accounts_pkey&#34; PRIMARY KEY, btree (aid)
+    &#34;i_pa2&#34; btree (abalance)
+Foreign-key constraints:
+    &#34;pgbench_accounts_bid_fkey&#34; FOREIGN KEY (bid) REFERENCES pgbench_branches(bid)
+Referenced by:
+    TABLE &#34;pgbench_history&#34; CONSTRAINT &#34;pgbench_history_aid_fkey&#34; FOREIGN KEY (aid) REFERENCES pgbench_accounts(aid)
+
+bench=# explain (analyze, buffers, costs, settings, verbose) select count(*) from pgbench_accounts where aid &gt;0 and aid &lt; 194999 and abalance &lt; -4500 and abalance &gt; -5000;
+                                                                                          QUERY PLAN
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Aggregate  (cost=18411.18..18411.19 rows=1 width=8) (actual time=99.326..99.328 rows=1 loops=1)
+   Output: count(*)
+   Buffers: shared hit=4763 read=161
+   -&gt;  Bitmap Heap Scan on public.pgbench_accounts  (cost=6475.99..18402.82 rows=3345 width=0) (actual time=77.222..98.977 rows=3382 loops=1)
+         Recheck Cond: ((pgbench_accounts.abalance &lt; &#39;-4500&#39;::integer) AND (pgbench_accounts.abalance &gt; &#39;-5000&#39;::integer) AND (pgbench_accounts.aid &gt; 0) AND (pgbench_accounts.aid &lt; 194999))
+         Rows Removed by Index Recheck: 192252
+         Heap Blocks: exact=938 lossy=3288
+         Buffers: shared hit=4763 read=161
+         -&gt;  BitmapAnd  (cost=6475.99..6475.99 rows=3345 width=0) (actual time=76.538..76.539 rows=0 loops=1)
+               Buffers: shared hit=535 read=161
+               -&gt;  Bitmap Index Scan on i_pa2  (cost=0.00..2222.09 rows=164966 width=0) (actual time=52.544..52.544 rows=178341 loops=1)
+                     Index Cond: ((pgbench_accounts.abalance &lt; &#39;-4500&#39;::integer) AND (pgbench_accounts.abalance &gt; &#39;-5000&#39;::integer))
+                     Buffers: shared read=161
+               -&gt;  Bitmap Index Scan on pgbench_accounts_pkey  (cost=0.00..4251.98 rows=202754 width=0) (actual time=16.240..16.240 rows=194998 loops=1)
+                     Index Cond: ((pgbench_accounts.aid &gt; 0) AND (pgbench_accounts.aid &lt; 194999))
+                     Buffers: shared hit=535
+ Planning:
+   Buffers: shared hit=16 read=1
+ Planning Time: 0.904 ms
+ Execution Time: 99.410 ms
+(20 rows)
+
+Time: 104.037 ms
+</code></pre><p>In the first query above, we find all the matching <code>aid</code> values and then drop rows where the <code>abalance</code> is positive. In the second query, two indexes are bitmap scanned to identify candidate rows and then the Index Recheck validates the data for each row. Because this is not a very large table, the second approach is actually slower as it has to eliminate more data.</p>
+<p>Now let&rsquo;s consider what happens when you have a composite key.</p>
+<pre tabindex="0"><code>bench=# \d pgbench_accounts
+              Table &#34;public.pgbench_accounts&#34;
+  Column  |     Type      | Collation | Nullable | Default
+----------+---------------+-----------+----------+---------
+ aid      | integer       |           | not null |
+ bid      | integer       |           |          |
+ abalance | integer       |           |          |
+ filler   | character(84) |           |          |
+Indexes:
+    &#34;pgbench_accounts_pkey&#34; PRIMARY KEY, btree (aid)
+    &#34;i_pa2&#34; btree (aid, abalance)
+Foreign-key constraints:
+    &#34;pgbench_accounts_bid_fkey&#34; FOREIGN KEY (bid) REFERENCES pgbench_branches(bid)
+Referenced by:
+    TABLE &#34;pgbench_history&#34; CONSTRAINT &#34;pgbench_history_aid_fkey&#34; FOREIGN KEY (aid) REFERENCES pgbench_accounts(aid)
+
+bench=# explain (analyze, buffers, costs, settings, verbose) select count(*) from pgbench_accounts where aid &gt;0 and aid &lt; 194999 and abalance &lt; -4500 and abalance &gt; -5000;
+                                                                                         QUERY PLAN
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Aggregate  (cost=11879.83..11879.84 rows=1 width=8) (actual time=27.790..27.791 rows=1 loops=1)
+   Output: count(*)
+   Buffers: shared hit=2743 read=532
+   -&gt;  Index Only Scan using i_pa2 on public.pgbench_accounts  (cost=0.43..11871.47 rows=3345 width=0) (actual time=0.126..27.198 rows=3382 loops=1)
+         Output: aid, abalance
+         Index Cond: ((pgbench_accounts.aid &gt; 0) AND (pgbench_accounts.aid &lt; 194999) AND (pgbench_accounts.abalance &lt; &#39;-4500&#39;::integer) AND (pgbench_accounts.abalance &gt; &#39;-5000&#39;::integer))
+         Heap Fetches: 3382
+         Buffers: shared hit=2743 read=532
+ Planning:
+   Buffers: shared hit=12 read=4
+ Planning Time: 1.204 ms
+ Execution Time: 27.839 ms
+(12 rows)
+
+Time: 30.328 ms
+</code></pre><p>As you can see, it is substantially quicker.</p>
+<h2 id="partial-indexes">Partial indexes</h2>
+<p>There is one other optimisation we can consider: if you are only interested in a subset of rows, then only index those rows.</p>
+<pre tabindex="0"><code>bench=# create index i_pa2 on pgbench_accounts(aid, abalance) where aid &gt; 0 and aid &lt; 194999 and abalance &lt; -4500 and abalance &gt; -5000;
+CREATE INDEX
+Time: 4182.695 ms (00:04.183)
+bench=# \d pgbench_accounts
+              Table &#34;public.pgbench_accounts&#34;
+  Column  |     Type      | Collation | Nullable | Default
+----------+---------------+-----------+----------+---------
+ aid      | integer       |           | not null |
+ bid      | integer       |           |          |
+ abalance | integer       |           |          |
+ filler   | character(84) |           |          |
+Indexes:
+    &#34;pgbench_accounts_pkey&#34; PRIMARY KEY, btree (aid)
+    &#34;i_pa2&#34; btree (aid, abalance) WHERE aid &gt; 0 AND aid &lt; 194999 AND abalance &lt; &#39;-4500&#39;::integer AND abalance &gt; &#39;-5000&#39;::integer
+Foreign-key constraints:
+    &#34;pgbench_accounts_bid_fkey&#34; FOREIGN KEY (bid) REFERENCES pgbench_branches(bid)
+Referenced by:
+    TABLE &#34;pgbench_history&#34; CONSTRAINT &#34;pgbench_history_aid_fkey&#34; FOREIGN KEY (aid) REFERENCES pgbench_accounts(aid)
+
+bench=# explain (analyze, buffers, costs, settings, verbose) select count(*) from pgbench_accounts where aid &gt;0 and aid &lt; 194999 and abalance &lt; -4500 and abalance &gt; -5000;
+                                                                    QUERY PLAN
+---------------------------------------------------------------------------------------------------------------------------------------------------
+ Aggregate  (cost=6679.09..6679.10 rows=1 width=8) (actual time=8.584..8.586 rows=1 loops=1)
+   Output: count(*)
+   Buffers: shared hit=2740 read=11
+   -&gt;  Index Only Scan using i_pa2 on public.pgbench_accounts  (cost=0.28..6670.73 rows=3345 width=0) (actual time=0.458..7.853 rows=3382 loops=1)
+         Output: aid, abalance
+         Heap Fetches: 3382
+         Buffers: shared hit=2740 read=11
+ Planning:
+   Buffers: shared hit=36 read=1
+ Planning Time: 1.261 ms
+ Execution Time: 8.659 ms
+(11 rows)
+
+Time: 13.911 ms
+</code></pre><p>Because the query has less index to traverse, the query is considerably quicker.</p>
+<p>Obviously, this cannot be applied to all indexes, but the gains can be very useful if it is usable.</p>
+<h2 id="covering-indexes">Covering indexes</h2>
+<p>Another advanced optimisation is a covering index. This means that the index covers all the columns that are returned by the query, so that the query does not have to examine data rows.</p>
+<pre tabindex="0"><code>bench=# \d pgbench_accounts
+              Table &#34;public.pgbench_accounts&#34;
+  Column  |     Type      | Collation | Nullable | Default
+----------+---------------+-----------+----------+---------
+ aid      | integer       |           | not null |
+ bid      | integer       |           |          |
+ abalance | integer       |           |          |
+ filler   | character(84) |           |          |
+Indexes:
+    &#34;pgbench_accounts_pkey&#34; PRIMARY KEY, btree (aid)
+    &#34;i_pa2&#34; btree (aid, abalance) WHERE aid &gt; 0 AND aid &lt; 194999 AND abalance &lt; &#39;-4500&#39;::integer AND abalance &gt; &#39;-5000&#39;::integer
+Foreign-key constraints:
+    &#34;pgbench_accounts_bid_fkey&#34; FOREIGN KEY (bid) REFERENCES pgbench_branches(bid)
+Referenced by:
+    TABLE &#34;pgbench_history&#34; CONSTRAINT &#34;pgbench_history_aid_fkey&#34; FOREIGN KEY (aid) REFERENCES pgbench_accounts(aid)
+
+bench=# explain (analyze, buffers, costs, settings, verbose) select count(distinct bid) from pgbench_accounts where aid &gt;0 and aid &lt; 194999 and abalance &lt; -4500 and abalance &gt; -5000;
+                                                                     QUERY PLAN
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+ Aggregate  (cost=6883.26..6883.27 rows=1 width=8) (actual time=17.342..17.344 rows=1 loops=1)
+   Output: count(DISTINCT bid)
+   Buffers: shared hit=2324
+   -&gt;  Sort  (cost=6866.54..6874.90 rows=3345 width=4) (actual time=15.559..16.273 rows=3382 loops=1)
+         Output: bid
+         Sort Key: pgbench_accounts.bid
+         Sort Method: quicksort  Memory: 97kB
+         Buffers: shared hit=2324
+         -&gt;  Index Scan using i_pa2 on public.pgbench_accounts  (cost=0.28..6670.73 rows=3345 width=4) (actual time=0.036..14.742 rows=3382 loops=1)
+               Output: bid
+               Buffers: shared hit=2324
+ Planning:
+   Buffers: shared hit=27 read=1
+ Planning Time: 1.119 ms
+ Execution Time: 17.460 ms
+(15 rows)
+
+Time: 25.948 ms
+bench=# drop index i_pa2;
+DROP INDEX
+Time: 5.494 ms
+bench=# create index i_pa2 on pgbench_accounts(aid, abalance, bid) where aid &gt; 0 and aid &lt; 194999 and abalance &lt; -4500 and abalance &gt; -5000;
+CREATE INDEX
+Time: 3619.871 ms (00:03.620)
+bench=# explain (analyze, buffers, costs, settings, verbose) select count(distinct bid) from pgbench_accounts where aid &gt;0 and aid &lt; 194999 and abalance &lt; -4500 and abalance &gt; -5000;
+                                                                       QUERY PLAN
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+ Aggregate  (cost=6895.26..6895.27 rows=1 width=8) (actual time=7.440..7.443 rows=1 loops=1)
+   Output: count(DISTINCT bid)
+   Buffers: shared hit=2740 read=14
+   -&gt;  Sort  (cost=6878.54..6886.90 rows=3345 width=4) (actual time=6.157..6.699 rows=3382 loops=1)
+         Output: bid
+         Sort Key: pgbench_accounts.bid
+         Sort Method: quicksort  Memory: 97kB
+         Buffers: shared hit=2740 read=14
+         -&gt;  Index Only Scan using i_pa2 on public.pgbench_accounts  (cost=0.28..6682.73 rows=3345 width=4) (actual time=0.135..5.331 rows=3382 loops=1)
+               Output: bid
+               Heap Fetches: 3382
+               Buffers: shared hit=2740 read=14
+ Planning:
+   Buffers: shared hit=48 read=1
+ Planning Time: 2.134 ms
+ Execution Time: 7.512 ms
+(16 rows)
+
+Time: 11.057 ms
+</code></pre><p>In the first query, we have our super-efficient index, but once the rows are identified, the data still has to be read to obtain the values for the <code>bid</code> column.</p>
+<p>If we create a covering index, the query speeds up because reading the data is not required - the significant change in the query plan is from <code>Index Scan using i_pa2</code> to <code>Index Only Scan using i_pa2</code>.</p>
+<p>In general, you should only use covering indexes on values that can fit into 20 bytes<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup> or less. Beyond this, the extra index size contends more strongly with the benefit.</p>
+<p>Also note that there are two forms for the creation of a covering index:</p>
+<ul>
+<li>CREATE INDEX tab_x_y ON tab(x,y);</li>
+<li>CREATE INDEX tab_x_y ON tab(x) INCLUDE (y);</li>
+</ul>
+<p>The first form should be used when y is a data type understood by the index. You should use this because PostgreSQL compresses duplicate values in the index, but does not as yet do this for the second form.</p>
+<p>The second form should only be used for a data type that is not understood by the index, because the index stores it &ldquo;as is&rdquo; and does not evaluate it for compression.</p>
+<h1 id="summary">Summary</h1>
+<p>In this post we looked at:</p>
+<ul>
+<li>Warning signs that indicate possible suboptimal indexes</li>
+<li>Composite versus multiple single indexes</li>
+<li>Partial indexes</li>
+<li>Covering indexes</li>
+</ul>
+<hr>
+<p>Previous: <a href="/post/query-performance-improvement-part-3">Identifying, investigting and mitigating</a> | Next: <a href="/post/query-performance-improvement-part-5/">Rewriting queries</a></p>
+<div class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1">
+<p>20 is an arbitrary number chosen totally at random, but there&rsquo;s no point in storing War And Peace or the Encyclopedia Britannica in your index. Small is beautiful.&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</div>
+</article>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script type="application/javascript" src='https://spokey.co.uk/js/toc.js'></script>
+<link rel="stylesheet" href='https://spokey.co.uk/css/toc.css' />
+
+  
+</div>
+
+  <div class="footer container-xl width-full p-responsive">
+  <div
+    class="position-relative d-flex flex-row-reverse flex-lg-row flex-wrap flex-lg-nowrap flex-justify-center flex-lg-justify-between flex-sm-items-center pt-6 pb-2 mt-6 f6 text-gray border-top border-gray-light ">
+    <a aria-label="Homepage" title="GitHub" class="footer-octicon d-none d-lg-block mr-lg-4" href="https://spokey.co.uk/">
+      <svg height="24" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="24">
+        <path fill-rule="evenodd"
+          d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z">
+        </path>
+      </svg>
+    </a>
+    <ul class="list-style-none d-flex flex-wrap col-12 flex-justify-center flex-lg-justify-between mb-2 mb-lg-0">
+      
+      <li class="mr-3 mr-lg-0">Theme by <a href='https://github.com/MeiK2333/github-style'>github-style</a></li>
+      
+      <li class="mr-3 mr-lg-0">GitHub and the Invertocat logo are trademarks of <a href="https://github.com/">GitHub, Inc.</a></li>
+    </ul>
+  </div>
+  <div class="d-flex flex-justify-center pb-6">
+    <span class="f6 text-gray-light"></span>
+  </div>
+
+
+</div>
+
+</body>
+
+<script type="application/javascript" src="https://spokey.co.uk/js/github-style.js"></script>
+
+
+
+
+
+
+
+</html>

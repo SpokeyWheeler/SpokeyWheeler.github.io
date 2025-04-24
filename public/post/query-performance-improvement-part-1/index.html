@@ -1,57 +1,69 @@
 <!DOCTYPE html>
 <html lang="en-us">
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
-    <script type="application/javascript" src='http://localhost:1313/js/theme-mode.js'></script>
-    <link rel="stylesheet" href='http://localhost:1313/css/frameworks.min.css' />
-    <link rel="stylesheet" href='http://localhost:1313/css/github.min.css' />
-    <link rel="stylesheet" href='http://localhost:1313/css/github-style.css' />
-    <link rel="stylesheet" href='http://localhost:1313/css/light.css' />
-    <link rel="stylesheet" href='http://localhost:1313/css/dark.css' />
-    <link rel="stylesheet" href='http://localhost:1313/css/syntax.css' />
+    <script type="application/javascript" src='https://spokey.co.uk/js/theme-mode.js'></script>
+    <link rel="stylesheet" href='https://spokey.co.uk/css/frameworks.min.css' />
+    <link rel="stylesheet" href='https://spokey.co.uk/css/github.min.css' />
+    <link rel="stylesheet" href='https://spokey.co.uk/css/github-style.css' />
+    <link rel="stylesheet" href='https://spokey.co.uk/css/light.css' />
+    <link rel="stylesheet" href='https://spokey.co.uk/css/dark.css' />
+    <link rel="stylesheet" href='https://spokey.co.uk/css/syntax.css' />
     <title>Query Performance Improvement Part 1 - Blog</title>
     
     <link rel="icon" type="image/x-icon" href='/images/avatar.png'>
     
     <meta name="theme-color" content="#1e2327">
 
-    <link rel="stylesheet" href="http://localhost:1313/css/custom.css">
-    <script type="text/javascript" src="http://localhost:1313/js/custom.js"></script>
+    <link rel="stylesheet" href="https://spokey.co.uk/css/custom.css">
+    <script type="text/javascript" src="https://spokey.co.uk/js/custom.js"></script>
 
     
     <meta name="description"
-  content="Introduction Welcome to this series of blog posts which will hopefully walk you through everything you need to know about improving query performance, specifically in PostgreSQL. The basic principles apply to all databases, though, even if implementation differences mean that different databases find different things painful.
-Who is this for? It&rsquo;s for anyone who works with databases, or is about to work with databases and wants to know how to make the best use of the power available: DBAs, developers, system admins, engineers as well as non-technical folk who may be curious about this mysterious process.
+  content="Overview Part 1 (this post) looks at some principles and introduces some of the tools in your arsenal.
+Part 2 covers the dreaded PostgreSQL bloat issue as well as how TOAST can help performance, or not.
+Part 3 dives deeper into identifying, investigating and mitigating slow queries.
+Part 4 covers indexing.
+Part 5 covers rewriting queries.
+TL;DR Scaling up or out is more expensive than spending a couple of hours optimising Get answers, not data Lazy load lookups Eliminate non-essential queries Don&rsquo;t use SERIALIZABLE isolation Make sure auto-analyze is running and have a manual ANALYZE schedule as a safety net Introduction Welcome to this series of blog posts which will hopefully walk you through everything you need to know about improving query performance, specifically in PostgreSQL. The basic principles apply to all databases, though, even if implementation differences mean that different databases find different things painful.
 " />
 <meta name="keywords"
   content='blog, google analytics' />
 <meta name="robots" content="noodp" />
-<link rel="canonical" href="http://localhost:1313/post/query-performance-improvement-part-1/" />
+<link rel="canonical" href="https://spokey.co.uk/post/query-performance-improvement-part-1/" />
 
 
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="Query Performance Improvement Part 1 - Blog" />
 <meta name="twitter:description"
-  content="Introduction Welcome to this series of blog posts which will hopefully walk you through everything you need to know about improving query performance, specifically in PostgreSQL. The basic principles apply to all databases, though, even if implementation differences mean that different databases find different things painful.
-Who is this for? It&rsquo;s for anyone who works with databases, or is about to work with databases and wants to know how to make the best use of the power available: DBAs, developers, system admins, engineers as well as non-technical folk who may be curious about this mysterious process.
+  content="Overview Part 1 (this post) looks at some principles and introduces some of the tools in your arsenal.
+Part 2 covers the dreaded PostgreSQL bloat issue as well as how TOAST can help performance, or not.
+Part 3 dives deeper into identifying, investigating and mitigating slow queries.
+Part 4 covers indexing.
+Part 5 covers rewriting queries.
+TL;DR Scaling up or out is more expensive than spending a couple of hours optimising Get answers, not data Lazy load lookups Eliminate non-essential queries Don&rsquo;t use SERIALIZABLE isolation Make sure auto-analyze is running and have a manual ANALYZE schedule as a safety net Introduction Welcome to this series of blog posts which will hopefully walk you through everything you need to know about improving query performance, specifically in PostgreSQL. The basic principles apply to all databases, though, even if implementation differences mean that different databases find different things painful.
 " />
-<meta name="twitter:site" content="http://localhost:1313/" />
+<meta name="twitter:site" content="https://spokey.co.uk/" />
 <meta name="twitter:creator" content="" />
 <meta name="twitter:image"
-  content="http://localhost:1313/">
+  content="https://spokey.co.uk/">
 
 
 <meta property="og:type" content="article" />
 <meta property="og:title" content="Query Performance Improvement Part 1 - Blog">
 <meta property="og:description"
-  content="Introduction Welcome to this series of blog posts which will hopefully walk you through everything you need to know about improving query performance, specifically in PostgreSQL. The basic principles apply to all databases, though, even if implementation differences mean that different databases find different things painful.
-Who is this for? It&rsquo;s for anyone who works with databases, or is about to work with databases and wants to know how to make the best use of the power available: DBAs, developers, system admins, engineers as well as non-technical folk who may be curious about this mysterious process.
+  content="Overview Part 1 (this post) looks at some principles and introduces some of the tools in your arsenal.
+Part 2 covers the dreaded PostgreSQL bloat issue as well as how TOAST can help performance, or not.
+Part 3 dives deeper into identifying, investigating and mitigating slow queries.
+Part 4 covers indexing.
+Part 5 covers rewriting queries.
+TL;DR Scaling up or out is more expensive than spending a couple of hours optimising Get answers, not data Lazy load lookups Eliminate non-essential queries Don&rsquo;t use SERIALIZABLE isolation Make sure auto-analyze is running and have a manual ANALYZE schedule as a safety net Introduction Welcome to this series of blog posts which will hopefully walk you through everything you need to know about improving query performance, specifically in PostgreSQL. The basic principles apply to all databases, though, even if implementation differences mean that different databases find different things painful.
 " />
-<meta property="og:url" content="http://localhost:1313/post/query-performance-improvement-part-1/" />
+<meta property="og:url" content="https://spokey.co.uk/post/query-performance-improvement-part-1/" />
 <meta property="og:site_name" content="Query Performance Improvement Part 1" />
 <meta property="og:image"
-  content="http://localhost:1313/">
+  content="https://spokey.co.uk/">
 <meta property="og:image:width" content="2048">
 <meta property="og:image:height" content="1024">
 
@@ -74,7 +86,7 @@ Who is this for? It&rsquo;s for anyone who works with databases, or is about to 
   <div style="position: relative">
   <header class="Header js-details-container Details px-3 px-md-4 px-lg-5 flex-wrap flex-md-nowrap open Details--on">
     <div class="Header-item mobile-none" style="margin-top: -4px; margin-bottom: -4px;">
-      <a class="Header-link" href="http://localhost:1313/">
+      <a class="Header-link" href="https://spokey.co.uk/">
         <img class="octicon" height="32" width="32" src="/images/fluidicon.png">
       </a>
     </div>
@@ -100,7 +112,7 @@ Who is this for? It&rsquo;s for anyone who works with databases, or is about to 
               <input type="text"
                 class="Header-search-input form-control input-sm header-search-input jump-to-field js-jump-to-field js-site-search-focus js-site-search-field is-clearable"
                 name="q" value="" placeholder="Search" autocomplete="off">
-              <input type="hidden" name="q" value="site:http://localhost:1313/">
+              <input type="hidden" name="q" value="site:https://spokey.co.uk/">
             </label>
           </form>
           
@@ -109,7 +121,7 @@ Who is this for? It&rsquo;s for anyone who works with databases, or is about to 
     </div>
 
     <div class="Header-item Header-item--full flex-justify-center d-md-none position-relative">
-      <a class="Header-link " href="http://localhost:1313/">
+      <a class="Header-link " href="https://spokey.co.uk/">
         <img class="octicon octicon-mark-github v-align-middle" height="32" width="32" src="/images/fluidicon.png">
       </a>
     </div>
@@ -139,7 +151,7 @@ Who is this for? It&rsquo;s for anyone who works with databases, or is about to 
           <div class="flex-auto min-width-0 width-fit mr-3">
             <div class="d-flex">
               <div class="d-none d-md-block">
-                <a class="avatar mr-2 flex-shrink-0" href="http://localhost:1313/">
+                <a class="avatar mr-2 flex-shrink-0" href="https://spokey.co.uk/">
                   <img class=" avatar-user"
                     src="/images/avatar.png"
                     width="32" height="32"></a>
@@ -147,11 +159,11 @@ Who is this for? It&rsquo;s for anyone who works with databases, or is about to 
               <div class="d-flex flex-column">
                 <h1 class="break-word f3 text-normal mb-md-0 mb-1">
                   <span class="author">
-                    <a href="http://localhost:1313/">SpokeyWheeler</a>
+                    <a href="https://spokey.co.uk/">SpokeyWheeler</a>
                   </span>
                   <span class="path-divider">/</span>
                   <strong class="css-truncate css-truncate-target mr-1" style="max-width: 410px">
-                    <a href="http://localhost:1313/post/query-performance-improvement-part-1/">Query Performance Improvement Part 1</a>
+                    <a href="https://spokey.co.uk/post/query-performance-improvement-part-1/">Query Performance Improvement Part 1</a>
                   </strong>
                 </h1>
                 <div class="note m-0">
@@ -161,9 +173,9 @@ Who is this for? It&rsquo;s for anyone who works with databases, or is about to 
 
                   
                   <span class="file-info-divider"></span>
-                  Modified <relative-time datetime="Sat, 19 Apr 2025 01:31:36 &#43;0100"
+                  Modified <relative-time datetime="Thu, 24 Apr 2025 12:49:37 &#43;0100"
                     class="no-wrap">
-                    Sat, 19 Apr 2025 01:31:36 &#43;0100</relative-time>
+                    Thu, 24 Apr 2025 12:49:37 &#43;0100</relative-time>
                   
                 </div>
               </div>
@@ -193,11 +205,49 @@ Who is this for? It&rsquo;s for anyone who works with databases, or is about to 
                         </div>
                       </div>
                     </details-menu>
-                      1019 Words
+                      1267 Words
                     
 
                   </div>
                   <div class="file-actions flex-order-2 pt-0">
+                    
+                    
+                    <a class="muted-link mr-3" href="/tags/postgresql">
+                      <svg class="octicon octicon-tag" viewBox="0 0 16 16" version="1.1" width="16" height="16">
+                        <path fill-rule="evenodd"
+                          d="M2.5 7.775V2.75a.25.25 0 01.25-.25h5.025a.25.25 0 01.177.073l6.25 6.25a.25.25 0 010 .354l-5.025 5.025a.25.25 0 01-.354 0l-6.25-6.25a.25.25 0 01-.073-.177zm-1.5 0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 010 2.474l-5.026 5.026a1.75 1.75 0 01-2.474 0l-6.25-6.25A1.75 1.75 0 011 7.775zM6 5a1 1 0 100 2 1 1 0 000-2z">
+                        </path>
+                      </svg>
+                      postgresql
+                    </a>
+                    
+                    <a class="muted-link mr-3" href="/tags/performance">
+                      <svg class="octicon octicon-tag" viewBox="0 0 16 16" version="1.1" width="16" height="16">
+                        <path fill-rule="evenodd"
+                          d="M2.5 7.775V2.75a.25.25 0 01.25-.25h5.025a.25.25 0 01.177.073l6.25 6.25a.25.25 0 010 .354l-5.025 5.025a.25.25 0 01-.354 0l-6.25-6.25a.25.25 0 01-.073-.177zm-1.5 0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 010 2.474l-5.026 5.026a1.75 1.75 0 01-2.474 0l-6.25-6.25A1.75 1.75 0 011 7.775zM6 5a1 1 0 100 2 1 1 0 000-2z">
+                        </path>
+                      </svg>
+                      performance
+                    </a>
+                    
+                    <a class="muted-link mr-3" href="/tags/serializable">
+                      <svg class="octicon octicon-tag" viewBox="0 0 16 16" version="1.1" width="16" height="16">
+                        <path fill-rule="evenodd"
+                          d="M2.5 7.775V2.75a.25.25 0 01.25-.25h5.025a.25.25 0 01.177.073l6.25 6.25a.25.25 0 010 .354l-5.025 5.025a.25.25 0 01-.354 0l-6.25-6.25a.25.25 0 01-.073-.177zm-1.5 0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 010 2.474l-5.026 5.026a1.75 1.75 0 01-2.474 0l-6.25-6.25A1.75 1.75 0 011 7.775zM6 5a1 1 0 100 2 1 1 0 000-2z">
+                        </path>
+                      </svg>
+                      serializable
+                    </a>
+                    
+                    <a class="muted-link mr-3" href="/tags/analyze">
+                      <svg class="octicon octicon-tag" viewBox="0 0 16 16" version="1.1" width="16" height="16">
+                        <path fill-rule="evenodd"
+                          d="M2.5 7.775V2.75a.25.25 0 01.25-.25h5.025a.25.25 0 01.177.073l6.25 6.25a.25.25 0 010 .354l-5.025 5.025a.25.25 0 01-.354 0l-6.25-6.25a.25.25 0 01-.073-.177zm-1.5 0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 010 2.474l-5.026 5.026a1.75 1.75 0 01-2.474 0l-6.25-6.25A1.75 1.75 0 011 7.775zM6 5a1 1 0 100 2 1 1 0 000-2z">
+                        </path>
+                      </svg>
+                      analyze
+                    </a>
+                    
                     
                   </div>
                 </div>
@@ -205,7 +255,22 @@ Who is this for? It&rsquo;s for anyone who works with databases, or is about to 
 
 
               <div class="Box-body px-5 pb-5" style="z-index: 1">
-                <article class="markdown-body entry-content container-lg"><h1 id="introduction">Introduction</h1>
+                <article class="markdown-body entry-content container-lg"><h1 id="overview">Overview</h1>
+<p>Part 1 (this post) looks at some principles and introduces some of the tools in your arsenal.</p>
+<p><a href="/post/query-performance-improvement-part-2">Part 2</a> covers the dreaded PostgreSQL bloat issue as well as how TOAST can help performance, or not.</p>
+<p><a href="/post/query-performance-improvement-part-3">Part 3</a> dives deeper into identifying, investigating and mitigating slow queries.</p>
+<p><a href="/post/query-performance-improvement-part-4">Part 4</a> covers indexing.</p>
+<p><a href="/post/query-performance-improvement-part-5">Part 5</a> covers rewriting queries.</p>
+<h1 id="tldr">TL;DR</h1>
+<ul>
+<li>Scaling up or out is more expensive than spending a couple of hours optimising</li>
+<li>Get answers, not data</li>
+<li>Lazy load lookups</li>
+<li>Eliminate non-essential queries</li>
+<li>Don&rsquo;t use SERIALIZABLE isolation</li>
+<li>Make sure auto-analyze is running and have a manual ANALYZE schedule as a safety net</li>
+</ul>
+<h1 id="introduction">Introduction</h1>
 <p>Welcome to this series of blog posts which will hopefully walk you through everything you need to know about improving query performance, specifically in PostgreSQL. The basic principles apply to all databases, though, even if implementation differences mean that different databases find different things painful.</p>
 <h2 id="who-is-this-for">Who is this for?</h2>
 <p>It&rsquo;s for anyone who works with databases, or is about to work with databases and wants to know how to make the best use of the power available: DBAs, developers, system admins, engineers as well as non-technical folk who may be curious about this mysterious process.</p>
@@ -213,30 +278,41 @@ Who is this for? It&rsquo;s for anyone who works with databases, or is about to 
 <p>I&rsquo;ve tried to make this as comprehensive as possible, starting with reasoning about performance. However, I&rsquo;m sure I&rsquo;ll have missed something, or some new feature or switch will come along that I don&rsquo;t address. So, <em>caveat emptor</em>!</p>
 <p>If your hair is on fire and you need to try something now, rather than reading through a philosophical treatise first, you can jump to part three of this series, which offers thoughts on indexing and rewriting queries that are most likely to have a direct impact on performance.</p>
 <p>However, if you&rsquo;re looking to make more fundamental changes to working with a database, then I strongly recommend reading the blogs in order.</p>
-<h2 id="overview">Overview</h2>
-<p>Part 1 looks at some principles and introduces some of the tools in your arsenal.</p>
-<p>Part 2 covers the dreaded PostgreSQL bloat issue as well as how TOAST can help performance, or hinder it.</p>
-<p>Part 3 dives deeper into identifying, investigating and mitigating slow queries.</p>
 <h1 id="background">Background</h1>
 <h2 id="who-cares">Who cares?</h2>
 <p>You may well ask why you should care about query performance. Modern hardware is so powerful and RAM is so cheap that you can just scale up the server if things aren&rsquo;t going fast enough. Well, up to a point. I&rsquo;ve been doing this for a long time and sooner or later everyone runs out of money or gets a bollocking from the CFO because of their AWS bill. At this point, it&rsquo;s really, really painful to try and speed up a database that has been treated like a pastebin - you&rsquo;re already under the cosh, and everything you need to do will take ages, cause outages and make everyone unhappy.</p>
 <h2 id="fundamental-reasoning">Fundamental reasoning</h2>
-<p>Let&rsquo;s assume you don&rsquo;t want to get a bollocking from the CFO, let&rsquo;s look at the issue from the database&rsquo;s point of view.</p>
+<p>Let&rsquo;s assume you don&rsquo;t want to get a bollocking from the CFO, and look at the issue of performance from the database&rsquo;s point of view.</p>
 <p>Databases tend to be run on quite substantial servers. This is just a function of the need to evaluate and process huge amounts of data. Even horizontally scalable distributed SQL databases like Cockroach perform better on a few huge servers than on dozens of small servers.</p>
 <p>This makes it harder to scale up, because for most substantial applications, you&rsquo;re already using servers above the median size. But it also means that you have quite a powerful server that you can leverage to get answers quickly.</p>
 <h2 id="use-the-database-as-much-as-necessary-but-no-more-than-that">Use the database as much as necessary, but no more than that</h2>
-<p>The first thing to do is to use the database to give answers, rather than provide data. This is contextual: if the customer is asking for a statement of transactions, you will obviously need to to return more data than if they are asking for a balance. You <em>could</em> just have one function that did both, but that would make every balance enquiry slower than it needs to be.</p>
+<h3 id="get-answers-not-data">Get answers, not data</h3>
+<p>The first thing to do is to use the database to give answers, rather than provide data. This is contextual: if the customer is asking for a statement of transactions, you will obviously need to to return more data than if they are asking for a balance. You <em>could</em> just have one function that did both, but that would make every balance enquiry less efficient and slower than it needs to be.</p>
+<h3 id="populating-lookup-tables">Populating lookup tables</h3>
 <p>Static lookup tables should only be lazy loaded once, the first time they are used. If the lookup table changes while the program is running you can do something like publish a message from PostgreSQL that the program can subscribe to, to empty the table and let it reload when next used.</p>
+<h3 id="do-i-even-need-this-query">Do I even need this query?</h3>
 <p>Something else to consider (and it really isn&rsquo;t done often enough!) is this: do I actually need this query? Does it provide me with any value? An example is where you&rsquo;re writing database rows to a message queue and mark them as sent. It&rsquo;s frustratingly common that the developer will do a count of unsent rows before trying to write a batch to the queue. Why do the count? Why not just try to do the write and if there are no rows to process, just drop out?</p>
 <h1 id="serializable-isolation">SERIALIZABLE isolation</h1>
 <p>The principle behind SERIALIZABLE isolation is that the developer need not be concerned about manually locking rows, the database takes care of isolating each transaction from every other.</p>
 <p>This sounds absolutely wonderful to developers, but it&rsquo;s important to realise that There Ain&rsquo;t No Such Thing As A Free Lunch: SERIALIZABLE isolation often leads to failed transactions (which can just be re-applied, but they do have to be re-applied.) So it&rsquo;s doing twice as much work (at least) for every failed transaction. It can also lead to all sorts of very painful contention issues. It&rsquo;s also important to realise that it&rsquo;s not just data modification that gets serialised - SELECTs get serialised, too!</p>
-<p>My reading of the academic paper behind PostgreSQL&rsquo;s serialisation mechanism shows that PostgreSQL will fail any transaction that could <em>potentially</em> have a conflict, not just those that actually <em>do</em> have a conflict.</p>
+<p>My reading of the <a href="https://arxiv.org/pdf/1208.4179">academic paper</a> behind PostgreSQL&rsquo;s serialisation mechanism shows that PostgreSQL will fail any transaction that could <em>potentially</em> have a conflict, not just those that actually <em>do</em> have a conflict.</p>
 <p>Furthermore, if query A gets considered for a conflict by query B, query A will be considered for a conflict by other queries as long as a query B is still running - even if query A has actually already completed! This means a lot of queries can fail for no reason.</p>
+<p>As an aside, I&rsquo;ve been doing database &ldquo;stuff&rdquo; for 40 years now, and I&rsquo;d never come across SERIALIZABLE (or its equivalent) until my last job, where I discovered why I&rsquo;d never come across it before, and why I hope I never come across it again. Save yourself from a world full of pain and don&rsquo;t use SERIALIZABLE or its equivalent in other databases.</p>
 <h1 id="analyze">ANALYZE</h1>
 <p>PostgreSQL has a cost-based optimiser that works out the most cost-efficient way to perform a query. The optimiser depends on a number of statistics to decide whether or not to use indexes, which indexes, join order, etc.</p>
-<p>The mechanism to keep these statistics in shape is the ANALYZE command.</p>
+<p>The mechanism to keep these statistics in shape is the <a href="https://www.postgresql.org/docs/current/sql-analyze.html">ANALYZE</a> command.</p>
 <p>For example, let&rsquo;s assume we have a table with an index, but the table only has 2 rows in it. The optimiser will always do a sequential scan of this table, as it is faster than traversing the index. However, if the table somehow gets 2 billion rows in it and the statistics are not updated, the optimiser will run all queries as sequential scans, even if the index would be much more efficient.</p>
+<p>Current versions of PostgreSQL tend to run auto-analyze, but it&rsquo;s worth forcing a manual ANALYZE on every table on a schedule based on the volatility of the table. Static lookup tables can be analyzed once a month, large and steadily growing tables once a week, and tables that oscillate wildly or grow rapidly should be done at least daily. This is primarily a safety measure and is not a sufficient substitute for auto-analyze.</p>
+<h1 id="summary">Summary</h1>
+<p>In this post, we looked at:</p>
+<ul>
+<li>why you should optimise rather than just scaling up (or out)</li>
+<li>principles of efficient database use</li>
+<li>why you should avoid using SERIALIZABLE isolation</li>
+<li>the basics of keeping optimiser statistics</li>
+</ul>
+<hr>
+<p>Next: <a href="/post/query-performance-improvement-part-2">Bloat and Toast</a></p>
 </article>
               </div>
             </div>
@@ -246,8 +322,8 @@ Who is this for? It&rsquo;s for anyone who works with databases, or is about to 
     </div>
   </main>
 </div>
-<script type="application/javascript" src='http://localhost:1313/js/toc.js'></script>
-<link rel="stylesheet" href='http://localhost:1313/css/toc.css' />
+<script type="application/javascript" src='https://spokey.co.uk/js/toc.js'></script>
+<link rel="stylesheet" href='https://spokey.co.uk/css/toc.css' />
 
   
 </div>
@@ -255,7 +331,7 @@ Who is this for? It&rsquo;s for anyone who works with databases, or is about to 
   <div class="footer container-xl width-full p-responsive">
   <div
     class="position-relative d-flex flex-row-reverse flex-lg-row flex-wrap flex-lg-nowrap flex-justify-center flex-lg-justify-between flex-sm-items-center pt-6 pb-2 mt-6 f6 text-gray border-top border-gray-light ">
-    <a aria-label="Homepage" title="GitHub" class="footer-octicon d-none d-lg-block mr-lg-4" href="http://localhost:1313/">
+    <a aria-label="Homepage" title="GitHub" class="footer-octicon d-none d-lg-block mr-lg-4" href="https://spokey.co.uk/">
       <svg height="24" class="octicon octicon-mark-github" viewBox="0 0 16 16" version="1.1" width="24">
         <path fill-rule="evenodd"
           d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z">
@@ -278,7 +354,7 @@ Who is this for? It&rsquo;s for anyone who works with databases, or is about to 
 
 </body>
 
-<script type="application/javascript" src="http://localhost:1313/js/github-style.js"></script>
+<script type="application/javascript" src="https://spokey.co.uk/js/github-style.js"></script>
 
 
 

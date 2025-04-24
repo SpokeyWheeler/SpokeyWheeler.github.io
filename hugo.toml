@@ -50,3 +50,7 @@ pygmentsUseClasses = true
 [caches]
   [caches.images]
     dir = ':cacheDir/images'
+
+[taxonomies]
+  category = 'categories'
+  tag = 'tags'

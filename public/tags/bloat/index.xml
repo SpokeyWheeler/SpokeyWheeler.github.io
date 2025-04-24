@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Bloat on Blog</title>
+    <link>https://spokey.co.uk/tags/bloat/</link>
+    <description>Recent content in Bloat on Blog</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 24 Apr 2025 12:49:17 +0100</lastBuildDate>
+    <atom:link href="https://spokey.co.uk/tags/bloat/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Query Performance Improvement Part 2</title>
+      <link>https://spokey.co.uk/post/query-performance-improvement-part-2/</link>
+      <pubDate>Sun, 20 Apr 2025 10:53:36 +0100</pubDate>
+      <guid>https://spokey.co.uk/post/query-performance-improvement-part-2/</guid>
+      <description>&lt;h1 id=&#34;overview&#34;&gt;Overview&lt;/h1&gt;&#xA;&lt;p&gt;&lt;a href=&#34;https://spokey.co.uk/post/query-performance-improvement-part-1&#34;&gt;Part 1&lt;/a&gt; looks at some principles and introduces some of the tools in your arsenal.&lt;/p&gt;&#xA;&lt;p&gt;Part 2 (this post) covers the dreaded PostgreSQL bloat issue as well as how TOAST can help performance, or hinder it.&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;https://spokey.co.uk/post/query-performance-improvement-part-3&#34;&gt;Part 3&lt;/a&gt; dives deeper into identifying, investigating and mitigating slow queries.&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;https://spokey.co.uk/post/query-performance-improvement-part-4&#34;&gt;Part 4&lt;/a&gt; covers indexing.&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;https://spokey.co.uk/post/query-performance-improvement-part-5&#34;&gt;Part 5&lt;/a&gt; covers rewriting queries.&lt;/p&gt;&#xA;&lt;h1 id=&#34;tldr&#34;&gt;TL;DR&lt;/h1&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Bloat occurs because PostgreSQL does not update in place, it creates a new row and marks the old one as obsolete&lt;/li&gt;&#xA;&lt;li&gt;VACUUM fixes bloat, well, it marks obsolete rows as re-usable space&lt;/li&gt;&#xA;&lt;li&gt;VACUUM FULL fixes bloat by compactly rewriting the data file and rebuilding indexes&lt;/li&gt;&#xA;&lt;li&gt;You should never run VACUUM FULL because it requires a full table lock&lt;/li&gt;&#xA;&lt;li&gt;pg_repack is an option &amp;hellip; possibly&lt;/li&gt;&#xA;&lt;li&gt;Use pg_repack with care - it can have problematic side effects&lt;/li&gt;&#xA;&lt;li&gt;TOAST compresses wide columns so that the resulting row is &amp;lt; 2kB&lt;/li&gt;&#xA;&lt;li&gt;If the table is still too wide, then compressed wide columns are split into 2kB chunks and move to a TOAST table&lt;/li&gt;&#xA;&lt;li&gt;A 2kB (ish) wide table can be problematic&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h1 id=&#34;bloat&#34;&gt;Bloat&lt;/h1&gt;&#xA;&lt;h2 id=&#34;what-is-bloat&#34;&gt;What is bloat?&lt;/h2&gt;&#xA;&lt;p&gt;Strictly speaking, bloat is the unused space left behind by a VACUUM that is not a VACUUM FULL.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
