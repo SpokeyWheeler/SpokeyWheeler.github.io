@@ -214,6 +214,24 @@
 <link rel="stylesheet" href='https://spokey.co.uk/css/toc.css' />
 
   
+<div id="gitalk-container" class="gitalk-container"></div>
+<link rel="stylesheet" href='https://spokey.co.uk/css/gitalk.css'>
+<script src='https://spokey.co.uk/js/gitalk.min.js'></script>
+<script>
+  const gitalk = new Gitalk({
+    clientID: 'Ov23lidpCMPBPI8PHMW3',
+    clientSecret: 'dacda6b06beed9ee031254685b8761bd15c83aac',
+    repo: 'SpokeyWheeler.github.io',
+    owner: 'SpokeyWheeler',
+    admin: ['SpokeyWheeler'],
+    id: eval("location.href.match('/(?\u003c=posts/)(.*)(?=/)/')[1]"), 
+    distractionFreeMode: false 
+  });
+  (function() {
+    gitalk.render('gitalk-container');
+  })();
+</script>
+
 </div>
 
   <div class="footer container-xl width-full p-responsive">

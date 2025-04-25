@@ -3,63 +3,19 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://spokey.co.uk/</loc>
-    <lastmod>2025-04-24T16:14:33+01:00</lastmod>
-  </url><url>
-    <loc>https://spokey.co.uk/categories/</loc>
-    <lastmod>2025-04-24T16:14:33+01:00</lastmod>
-  </url><url>
-    <loc>https://spokey.co.uk/categories/databases/</loc>
-    <lastmod>2025-04-24T16:14:33+01:00</lastmod>
-  </url><url>
-    <loc>https://spokey.co.uk/categories/performance/</loc>
-    <lastmod>2025-04-24T16:14:33+01:00</lastmod>
-  </url><url>
-    <loc>https://spokey.co.uk/tags/performance/</loc>
-    <lastmod>2025-04-24T16:14:33+01:00</lastmod>
-  </url><url>
-    <loc>https://spokey.co.uk/categories/postgresql/</loc>
-    <lastmod>2025-04-24T16:14:33+01:00</lastmod>
-  </url><url>
-    <loc>https://spokey.co.uk/tags/postgresql/</loc>
-    <lastmod>2025-04-24T16:14:33+01:00</lastmod>
+    <lastmod>2025-04-25T10:06:33+01:00</lastmod>
   </url><url>
     <loc>https://spokey.co.uk/post/</loc>
-    <lastmod>2025-04-24T16:14:33+01:00</lastmod>
+    <lastmod>2025-04-25T10:06:33+01:00</lastmod>
   </url><url>
-    <loc>https://spokey.co.uk/post/query-performance-improvement-part-5/</loc>
-    <lastmod>2025-04-23T12:16:07+01:00</lastmod>
-  </url><url>
-    <loc>https://spokey.co.uk/tags/</loc>
-    <lastmod>2025-04-24T16:14:33+01:00</lastmod>
-  </url><url>
-    <loc>https://spokey.co.uk/post/query-performance-improvement-part-4/</loc>
-    <lastmod>2025-04-24T13:56:54+01:00</lastmod>
-  </url><url>
-    <loc>https://spokey.co.uk/post/query-performance-improvement-part-3/</loc>
-    <lastmod>2025-04-24T16:14:33+01:00</lastmod>
-  </url><url>
-    <loc>https://spokey.co.uk/tags/bloat/</loc>
-    <lastmod>2025-04-24T12:49:17+01:00</lastmod>
-  </url><url>
-    <loc>https://spokey.co.uk/post/query-performance-improvement-part-2/</loc>
-    <lastmod>2025-04-24T12:49:17+01:00</lastmod>
-  </url><url>
-    <loc>https://spokey.co.uk/tags/toast/</loc>
-    <lastmod>2025-04-24T12:49:17+01:00</lastmod>
-  </url><url>
-    <loc>https://spokey.co.uk/tags/analyze/</loc>
-    <lastmod>2025-04-24T12:49:37+01:00</lastmod>
-  </url><url>
-    <loc>https://spokey.co.uk/post/query-performance-improvement-part-1/</loc>
-    <lastmod>2025-04-24T12:49:37+01:00</lastmod>
-  </url><url>
-    <loc>https://spokey.co.uk/tags/serializable/</loc>
-    <lastmod>2025-04-24T12:49:37+01:00</lastmod>
-  </url><url>
-    <loc>https://spokey.co.uk/post/welcome/</loc>
-    <lastmod>2025-04-18T20:51:58+01:00</lastmod>
+    <loc>https://spokey.co.uk/post/test/</loc>
+    <lastmod>2025-04-25T10:06:33+01:00</lastmod>
   </url><url>
     <loc>https://spokey.co.uk/readme/</loc>
     <lastmod>2025-04-18T23:05:01+01:00</lastmod>
+  </url><url>
+    <loc>https://spokey.co.uk/categories/</loc>
+  </url><url>
+    <loc>https://spokey.co.uk/tags/</loc>
   </url>
 </urlset>

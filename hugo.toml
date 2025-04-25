@@ -19,21 +19,21 @@ pygmentsUseClasses = true
   avatar = "/images/avatar.png"
   headerIcon = "/images/fluidicon.png"
   location = "The Lowest of the Low"
-  enableGitalk = false
+  enableGitalk = true
   custom_css = ["css/custom.css"]
   custom_js = ["js/custom.js"]
 
   [params.gitalk]
-    clientID = "Your client ID"
-    clientSecret = "Your client secret"
-    repo = "repo"
+    clientID = "Ov23lidpCMPBPI8PHMW3"
+    clientSecret = "dacda6b06beed9ee031254685b8761bd15c83aac"
+    repo = "SpokeyWheeler.github.io"
     owner = "SpokeyWheeler"
     admin = "SpokeyWheeler"
-    id = "location.pathname"
+    id = "location.href.match('/(?<=posts/)(.*)(?=/)/')[1]"
     labels = "gitalk"
     perPage = 15
     pagerDirection = "last"
-    createIssueManually = true
+    createIssueManually = false
     distractionFreeMode = false
 
   [[params.links]]

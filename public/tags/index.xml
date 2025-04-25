@@ -6,49 +6,6 @@
     <description>Recent content in Tags on Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 24 Apr 2025 16:14:33 +0100</lastBuildDate>
     <atom:link href="https://spokey.co.uk/tags/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Performance</title>
-      <link>https://spokey.co.uk/tags/performance/</link>
-      <pubDate>Wed, 23 Apr 2025 12:07:07 +0100</pubDate>
-      <guid>https://spokey.co.uk/tags/performance/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Postgresql</title>
-      <link>https://spokey.co.uk/tags/postgresql/</link>
-      <pubDate>Wed, 23 Apr 2025 12:07:07 +0100</pubDate>
-      <guid>https://spokey.co.uk/tags/postgresql/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Bloat</title>
-      <link>https://spokey.co.uk/tags/bloat/</link>
-      <pubDate>Sun, 20 Apr 2025 10:53:36 +0100</pubDate>
-      <guid>https://spokey.co.uk/tags/bloat/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Toast</title>
-      <link>https://spokey.co.uk/tags/toast/</link>
-      <pubDate>Sun, 20 Apr 2025 10:53:36 +0100</pubDate>
-      <guid>https://spokey.co.uk/tags/toast/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Analyze</title>
-      <link>https://spokey.co.uk/tags/analyze/</link>
-      <pubDate>Sat, 19 Apr 2025 01:30:19 +0100</pubDate>
-      <guid>https://spokey.co.uk/tags/analyze/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>Serializable</title>
-      <link>https://spokey.co.uk/tags/serializable/</link>
-      <pubDate>Sat, 19 Apr 2025 01:30:19 +0100</pubDate>
-      <guid>https://spokey.co.uk/tags/serializable/</guid>
-      <description></description>
-    </item>
   </channel>
 </rss>
