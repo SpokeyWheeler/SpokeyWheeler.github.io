@@ -156,7 +156,7 @@
                 </path>
               </svg>
               Posts
-              <span class="Counter">1</span>
+              <span class="Counter">6</span>
             </a>
           </nav>
           <div class="profile-color-modes js-promo-color-modes-banner-profile isInitialToggle">
@@ -440,7 +440,7 @@
         </path>
       </svg>
       Posts
-      <span class="Counter ">1</span>
+      <span class="Counter ">6</span>
     </a>
   </nav>
 </div>
@@ -496,15 +496,438 @@
                       d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8zM5 12.25v3.25a.25.25 0 00.4.2l1.45-1.087a.25.25 0 01.3 0L8.6 15.7a.25.25 0 00.4-.2v-3.25a.25.25 0 00-.25-.25h-3.5a.25.25 0 00-.25.25z">
                     </path>
                   </svg>
-                  <a class="text-bold flex-auto min-width-0" href="https://spokey.co.uk/post/test/">
-                    <span class="repo" title="Test">Test</span>
+                  <a class="text-bold flex-auto min-width-0" href="https://spokey.co.uk/post/query-performance-improvement-part-5/">
+                    <span class="repo" title="Query Performance Improvement Part 5">Query Performance Improvement Part 5</span>
                   </a>
                 </div>
 
 
                 <div name="summary" class="pinned-item-desc text-gray text-small d-block mt-2 mb-3">
-                  <h1 id="test">Test</h1>
-<p>Bla bla</p>
+                  <h1 id="overview">Overview</h1>
+<p><a href="/post/query-performance-improvement-part-1">Part 1</a> looks at some principles and introduces some of the tools in your arsenal.</p>
+<p><a href="/post/query-performance-improvement-part-2">Part 2</a> covers the dreaded PostgreSQL bloat issue as well as how TOAST can help performance, or hinder it.</p>
+<p><a href="/post/query-performance-improvement-part-3">Part 3</a> dives deeper into identifying, investigating and mitigating slow queries.</p>
+<p><a href="/post/query-performance-improvement-part-4">Part 4</a> covers indexes.</p>
+<p>Part 5 (this post) covers rewriting queries.</p>
+<h1 id="tldr">TL;DR</h1>
+<ul>
+<li>Break your query down using CTEs</li>
+<li>Optimise each step</li>
+<li>Rewrite using what you&rsquo;ve learned (if you want to)</li>
+<li>Visualising an explain plan can really make problems obvious, compared to sifting through a sea of text</li>
+</ul>
+<h1 id="rewriting-queries">Rewriting queries</h1>
+<pre tabindex="0"><code>bench=# \d pgbench_accounts
+              Table &#34;public.pgbench_accounts&#34;
+  Column  |     Type      | Collation | Nullable | Default
+----------+---------------+-----------+----------+---------
+ aid      | integer       |           | not null |
+ bid      | integer       |           |          |
+ abalance | integer       |           |          |
+ filler   | character(84) |           |          |
+Indexes:
+    &#34;pgbench_accounts_pkey&#34; PRIMARY KEY, btree (aid)
+    &#34;i_pa2&#34; btree (aid, abalance, bid) WHERE aid &gt; 0 AND aid &lt; 194999 AND abalance &lt; &#39;-4500&#39;::integer AND abalance &gt; &#39;-5000&#39;::integer
+Foreign-key constraints:
+    &#34;pgbench_accounts_bid_fkey&#34; FOREIGN KEY (bid) REFERENCES pgbench_branches(bid)
+Referenced by:
+    TABLE &#34;pgbench_history&#34; CONSTRAINT &#34;pgbench_history_aid_fkey&#34; FOREIGN KEY (aid) REFERENCES pgbench_accounts(aid)
+
+bench=# \d pgbench_branches
+              Table &#34;public.pgbench_branches&#34;
+  Column  |     Type      | Collation | Nullable | Default
+----------+---------------+-----------+----------+---------
+ bid      | integer       |           | not null |
+ bbalance | integer       |           |          |
+ filler   | character(88) |           |          |
+Indexes:
+    &#34;pgbench_branches_pkey&#34; PRIMARY KEY, btree (bid)
+Referenced by:
+    TABLE &#34;pgbench_accounts&#34; CONSTRAINT &#34;pgbench_accounts_bid_fkey&#34; FOREIGN KEY (bid) REFERENCES pgbench_branches(bid)
+    TABLE &#34;pgbench_history&#34; CONSTRAINT &#34;pgbench_history_bid_fkey&#34; FOREIGN KEY (bid) REFERENCES pgbench_branches(bid)
+    TABLE &#34;pgbench_tellers&#34; CONSTRAINT &#34;pgbench_tellers_bid_fkey&#34; FOREIGN KEY (bid) REFERENCES pgbench_branches(bid)
+
+bench=# \d pgbench_history
+                    Table &#34;public.pgbench_history&#34;
+ Column |            Type             | Collation | Nullable | Default
+--------+-----------------------------+-----------+----------+---------
+ tid    | integer                     |           |          |
+ bid    | integer                     |           |          |
+ aid    | integer                     |           |          |
+ delta  | integer                     |           |          |
+ mtime  | timestamp without time zone |           |          |
+ filler | character(22)               |           |          |
+Indexes:
+    &#34;i1&#34; btree (aid, delta) WHERE delta &lt; 0
+Foreign-key constraints:
+    &#34;pgbench_history_aid_fkey&#34; FOREIGN KEY (aid) REFERENCES pgbench_accounts(aid)
+    &#34;pgbench_history_bid_fkey&#34; FOREIGN KEY (bid) REFERENCES pgbench_branches(bid)
+    &#34;pgbench_history_tid_fkey&#34; FOREIGN KEY (tid) REFERENCES pgbench_tellers(tid)
+
+bench=# \d pgbench_tellers
+              Table &#34;public.pgbench_tellers&#34;
+  Column  |     Type      | Collation | Nullable | Default
+----------+---------------+-----------+----------+---------
+ tid      | integer       |           | not null |
+ bid      | integer       |           |          |
+ tbalance | integer       |           |          |
+ filler   | character(84) |           |          |
+Indexes:
+    &#34;pgbench_tellers_pkey&#34; PRIMARY KEY, btree (tid)
+Foreign-key constraints:
+    &#34;pgbench_tellers_bid_fkey&#34; FOREIGN KEY (bid) REFERENCES pgbench_branches(bid)
+Referenced by:
+    TABLE &#34;pgbench_history&#34; CONSTRAINT &#34;pgbench_history_tid_fkey&#34; FOREIGN KEY (tid) REFERENCES pgbench_tellers(tid)
+</code></pre><h2 id="joins">Joins</h2>
+<p>We have already covered one aspect of query rewriting, namely how to rewrite joins, which we covered in <a href="/post/query-performance-improvement-part-3/">Query Performance Improvement Part 3</a>.</p>
+                </div>
+
+                <p class="mb-0 f6 text-gray">
+                  
+                  
+                  <a href="/tags/postgresql" class="pinned-item-meta muted-link ">
+                    <svg class="octicon octicon-tag" viewBox="0 0 16 16" version="1.1" width="16" height="16">
+                      <path fill-rule="evenodd"
+                        d="M2.5 7.775V2.75a.25.25 0 01.25-.25h5.025a.25.25 0 01.177.073l6.25 6.25a.25.25 0 010 .354l-5.025 5.025a.25.25 0 01-.354 0l-6.25-6.25a.25.25 0 01-.073-.177zm-1.5 0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 010 2.474l-5.026 5.026a1.75 1.75 0 01-2.474 0l-6.25-6.25A1.75 1.75 0 011 7.775zM6 5a1 1 0 100 2 1 1 0 000-2z">
+                      </path>
+                    </svg>
+                    postgresql
+                  </a>
+                  
+                  <a href="/tags/performance" class="pinned-item-meta muted-link ">
+                    <svg class="octicon octicon-tag" viewBox="0 0 16 16" version="1.1" width="16" height="16">
+                      <path fill-rule="evenodd"
+                        d="M2.5 7.775V2.75a.25.25 0 01.25-.25h5.025a.25.25 0 01.177.073l6.25 6.25a.25.25 0 010 .354l-5.025 5.025a.25.25 0 01-.354 0l-6.25-6.25a.25.25 0 01-.073-.177zm-1.5 0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 010 2.474l-5.026 5.026a1.75 1.75 0 01-2.474 0l-6.25-6.25A1.75 1.75 0 011 7.775zM6 5a1 1 0 100 2 1 1 0 000-2z">
+                      </path>
+                    </svg>
+                    performance
+                  </a>
+                  
+                  
+                </p>
+              </div>
+            </div>
+          </li>
+          
+          <li class="col-12 col-md-6 col-lg-6 mb-3 d-flex flex-content-stretch">
+            <div
+              class="Box pinned-item-list-item d-flex p-3 width-full js-pinned-item-list-item public source reorderable sortable-button-item">
+              <div class="pinned-item-list-item-content">
+                <div class="d-flex width-full flex-items-center position-relative">
+                  <svg class="octicon octicon-repo mr-2 text-gray flex-shrink-0" viewBox="0 0 16 16" version="1.1"
+                    width="16" height="16">
+                    <path fill-rule="evenodd"
+                      d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8zM5 12.25v3.25a.25.25 0 00.4.2l1.45-1.087a.25.25 0 01.3 0L8.6 15.7a.25.25 0 00.4-.2v-3.25a.25.25 0 00-.25-.25h-3.5a.25.25 0 00-.25.25z">
+                    </path>
+                  </svg>
+                  <a class="text-bold flex-auto min-width-0" href="https://spokey.co.uk/post/query-performance-improvement-part-4/">
+                    <span class="repo" title="Query Performance Improvement Part 4">Query Performance Improvement Part 4</span>
+                  </a>
+                </div>
+
+
+                <div name="summary" class="pinned-item-desc text-gray text-small d-block mt-2 mb-3">
+                  <h1 id="overview">Overview</h1>
+<p><a href="/post/query-performance-improvement-part-1">Part 1</a> looks at some principles and introduces some of the tools in your arsenal.</p>
+<p><a href="/post/query-performance-improvement-part-2">Part 2</a> covers the dreaded PostgreSQL bloat issue as well as how TOAST can help performance, or hinder it.</p>
+<p><a href="/post/query-performance-improvement-part-3">Part 3</a> dives deeper into identifying, investigating and mitigating slow queries.</p>
+<p>Part 4 (this post) covers indexing.</p>
+<p><a href="/post/query-performance-improvement-part-5">Part 5</a> covers rewriting queries.</p>
+<h1 id="tldr">TL;DR</h1>
+<ul>
+<li>If you see &ldquo;Filter:&rdquo; or &ldquo;Rows Removed&rdquo; in your explain plan, you are likely to be using the wrong index</li>
+<li>Composite indexes can be much faster than multiple single indexes</li>
+<li>Partial indexes reduce the height and size of the index, making them faster</li>
+<li>Covering indexes can speed queries even further</li>
+<li>The bigger the table, the more likely it is that an index will add value</li>
+<li>Small tables are often sequentially scanned, whether indexed or not</li>
+<li>Small to medium tables tend to benefit from single column indexes, less from more complex indexes</li>
+<li>Large tables tend to benefit more from complex indexes</li>
+<li>Always test before pushing to production!</li>
+</ul>
+<h1 id="indexes">Indexes</h1>
+<p>Indexes are one of the most effective tools to improve query performance. Indexes work best when they return a small subset of data and are small compared to row size. So an 8-byte integer index on a 2kB row is more efficient than a 1kB text index on a 1.5kB row.</p>
+                </div>
+
+                <p class="mb-0 f6 text-gray">
+                  
+                  
+                  <a href="/tags/postgresql" class="pinned-item-meta muted-link ">
+                    <svg class="octicon octicon-tag" viewBox="0 0 16 16" version="1.1" width="16" height="16">
+                      <path fill-rule="evenodd"
+                        d="M2.5 7.775V2.75a.25.25 0 01.25-.25h5.025a.25.25 0 01.177.073l6.25 6.25a.25.25 0 010 .354l-5.025 5.025a.25.25 0 01-.354 0l-6.25-6.25a.25.25 0 01-.073-.177zm-1.5 0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 010 2.474l-5.026 5.026a1.75 1.75 0 01-2.474 0l-6.25-6.25A1.75 1.75 0 011 7.775zM6 5a1 1 0 100 2 1 1 0 000-2z">
+                      </path>
+                    </svg>
+                    postgresql
+                  </a>
+                  
+                  <a href="/tags/performance" class="pinned-item-meta muted-link ">
+                    <svg class="octicon octicon-tag" viewBox="0 0 16 16" version="1.1" width="16" height="16">
+                      <path fill-rule="evenodd"
+                        d="M2.5 7.775V2.75a.25.25 0 01.25-.25h5.025a.25.25 0 01.177.073l6.25 6.25a.25.25 0 010 .354l-5.025 5.025a.25.25 0 01-.354 0l-6.25-6.25a.25.25 0 01-.073-.177zm-1.5 0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 010 2.474l-5.026 5.026a1.75 1.75 0 01-2.474 0l-6.25-6.25A1.75 1.75 0 011 7.775zM6 5a1 1 0 100 2 1 1 0 000-2z">
+                      </path>
+                    </svg>
+                    performance
+                  </a>
+                  
+                  
+                </p>
+              </div>
+            </div>
+          </li>
+          
+          <li class="col-12 col-md-6 col-lg-6 mb-3 d-flex flex-content-stretch">
+            <div
+              class="Box pinned-item-list-item d-flex p-3 width-full js-pinned-item-list-item public source reorderable sortable-button-item">
+              <div class="pinned-item-list-item-content">
+                <div class="d-flex width-full flex-items-center position-relative">
+                  <svg class="octicon octicon-repo mr-2 text-gray flex-shrink-0" viewBox="0 0 16 16" version="1.1"
+                    width="16" height="16">
+                    <path fill-rule="evenodd"
+                      d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8zM5 12.25v3.25a.25.25 0 00.4.2l1.45-1.087a.25.25 0 01.3 0L8.6 15.7a.25.25 0 00.4-.2v-3.25a.25.25 0 00-.25-.25h-3.5a.25.25 0 00-.25.25z">
+                    </path>
+                  </svg>
+                  <a class="text-bold flex-auto min-width-0" href="https://spokey.co.uk/post/query-performance-improvement-part-3/">
+                    <span class="repo" title="Query Performance Improvement Part 3">Query Performance Improvement Part 3</span>
+                  </a>
+                </div>
+
+
+                <div name="summary" class="pinned-item-desc text-gray text-small d-block mt-2 mb-3">
+                  <h1 id="overview">Overview</h1>
+<p><a href="/post/query-performance-improvement-part-1">Part 1</a> looks at some principles and introduces some of the tools in your arsenal.</p>
+<p><a href="/post/query-performance-improvement-part-2">Part 2</a> covers the dreaded PostgreSQL bloat issue as well as how TOAST can help performance, or hinder it.</p>
+<p>Part 3 (this post) dives deeper into identifying, investigating and mitigating slow queries.</p>
+<p><a href="/post/query-performance-improvement-part-4">Part 4</a> covers indexing.</p>
+<p><a href="/post/query-performance-improvement-part-5">Part 5</a> covers rewriting queries.</p>
+<h1 id="tldr">TL;DR</h1>
+<ul>
+<li>Use logging to identify slow queries</li>
+<li>Use <code>EXPLAIN</code> to examine an explain plan</li>
+<li><code>EXPLAIN (ANALYZE)</code> can be dangerous!</li>
+<li>Use <a href="https://explain.depesz.com">depesz</a>, <a href="https://explain.dalibo.com">dalibo</a> or <a href="https://tatiyants.com/pev/#/plans/new">PEV</a> to visualize your explain plan</li>
+<li>Red flags in your explain plan include filters, Rows Removed, and / or costs in excess of 100,000</li>
+<li>Data may not be evenly distributed, check it! Especially test data!</li>
+<li>Only select the rows and columns you need</li>
+</ul>
+<h1 id="identifying-slow-queries">Identifying slow queries</h1>
+<p>The most reliable way of identifying slow queries is to enable slow query logging using the parameter <a href="https://www.postgresql.org/docs/17/runtime-config-logging.html#GUC-LOG-MIN-DURATION-STATEMENT">log_min_duration_statement</a>. The pain threshold varies by environment, but for example if you wanted to log all queries that take longer than 50ms, you would issue the following command in psql:</p>
+                </div>
+
+                <p class="mb-0 f6 text-gray">
+                  
+                  
+                  <a href="/tags/postgresql" class="pinned-item-meta muted-link ">
+                    <svg class="octicon octicon-tag" viewBox="0 0 16 16" version="1.1" width="16" height="16">
+                      <path fill-rule="evenodd"
+                        d="M2.5 7.775V2.75a.25.25 0 01.25-.25h5.025a.25.25 0 01.177.073l6.25 6.25a.25.25 0 010 .354l-5.025 5.025a.25.25 0 01-.354 0l-6.25-6.25a.25.25 0 01-.073-.177zm-1.5 0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 010 2.474l-5.026 5.026a1.75 1.75 0 01-2.474 0l-6.25-6.25A1.75 1.75 0 011 7.775zM6 5a1 1 0 100 2 1 1 0 000-2z">
+                      </path>
+                    </svg>
+                    postgresql
+                  </a>
+                  
+                  <a href="/tags/performance" class="pinned-item-meta muted-link ">
+                    <svg class="octicon octicon-tag" viewBox="0 0 16 16" version="1.1" width="16" height="16">
+                      <path fill-rule="evenodd"
+                        d="M2.5 7.775V2.75a.25.25 0 01.25-.25h5.025a.25.25 0 01.177.073l6.25 6.25a.25.25 0 010 .354l-5.025 5.025a.25.25 0 01-.354 0l-6.25-6.25a.25.25 0 01-.073-.177zm-1.5 0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 010 2.474l-5.026 5.026a1.75 1.75 0 01-2.474 0l-6.25-6.25A1.75 1.75 0 011 7.775zM6 5a1 1 0 100 2 1 1 0 000-2z">
+                      </path>
+                    </svg>
+                    performance
+                  </a>
+                  
+                  
+                </p>
+              </div>
+            </div>
+          </li>
+          
+          <li class="col-12 col-md-6 col-lg-6 mb-3 d-flex flex-content-stretch">
+            <div
+              class="Box pinned-item-list-item d-flex p-3 width-full js-pinned-item-list-item public source reorderable sortable-button-item">
+              <div class="pinned-item-list-item-content">
+                <div class="d-flex width-full flex-items-center position-relative">
+                  <svg class="octicon octicon-repo mr-2 text-gray flex-shrink-0" viewBox="0 0 16 16" version="1.1"
+                    width="16" height="16">
+                    <path fill-rule="evenodd"
+                      d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8zM5 12.25v3.25a.25.25 0 00.4.2l1.45-1.087a.25.25 0 01.3 0L8.6 15.7a.25.25 0 00.4-.2v-3.25a.25.25 0 00-.25-.25h-3.5a.25.25 0 00-.25.25z">
+                    </path>
+                  </svg>
+                  <a class="text-bold flex-auto min-width-0" href="https://spokey.co.uk/post/query-performance-improvement-part-2/">
+                    <span class="repo" title="Query Performance Improvement Part 2">Query Performance Improvement Part 2</span>
+                  </a>
+                </div>
+
+
+                <div name="summary" class="pinned-item-desc text-gray text-small d-block mt-2 mb-3">
+                  <h1 id="overview">Overview</h1>
+<p><a href="/post/query-performance-improvement-part-1">Part 1</a> looks at some principles and introduces some of the tools in your arsenal.</p>
+<p>Part 2 (this post) covers the dreaded PostgreSQL bloat issue as well as how TOAST can help performance, or hinder it.</p>
+<p><a href="/post/query-performance-improvement-part-3">Part 3</a> dives deeper into identifying, investigating and mitigating slow queries.</p>
+<p><a href="/post/query-performance-improvement-part-4">Part 4</a> covers indexing.</p>
+<p><a href="/post/query-performance-improvement-part-5">Part 5</a> covers rewriting queries.</p>
+<h1 id="tldr">TL;DR</h1>
+<ul>
+<li>Bloat occurs because PostgreSQL does not update in place, it creates a new row and marks the old one as obsolete</li>
+<li>VACUUM fixes bloat, well, it marks obsolete rows as re-usable space</li>
+<li>VACUUM FULL fixes bloat by compactly rewriting the data file and rebuilding indexes</li>
+<li>You should never run VACUUM FULL because it requires a full table lock</li>
+<li>pg_repack is an option &hellip; possibly</li>
+<li>Use pg_repack with care - it can have problematic side effects</li>
+<li>TOAST compresses wide columns so that the resulting row is &lt; 2kB</li>
+<li>If the table is still too wide, then compressed wide columns are split into 2kB chunks and move to a TOAST table</li>
+<li>A 2kB (ish) wide table can be problematic</li>
+</ul>
+<h1 id="bloat">Bloat</h1>
+<h2 id="what-is-bloat">What is bloat?</h2>
+<p>Strictly speaking, bloat is the unused space left behind by a VACUUM that is not a VACUUM FULL.</p>
+                </div>
+
+                <p class="mb-0 f6 text-gray">
+                  
+                  
+                  <a href="/tags/postgresql" class="pinned-item-meta muted-link ">
+                    <svg class="octicon octicon-tag" viewBox="0 0 16 16" version="1.1" width="16" height="16">
+                      <path fill-rule="evenodd"
+                        d="M2.5 7.775V2.75a.25.25 0 01.25-.25h5.025a.25.25 0 01.177.073l6.25 6.25a.25.25 0 010 .354l-5.025 5.025a.25.25 0 01-.354 0l-6.25-6.25a.25.25 0 01-.073-.177zm-1.5 0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 010 2.474l-5.026 5.026a1.75 1.75 0 01-2.474 0l-6.25-6.25A1.75 1.75 0 011 7.775zM6 5a1 1 0 100 2 1 1 0 000-2z">
+                      </path>
+                    </svg>
+                    postgresql
+                  </a>
+                  
+                  <a href="/tags/performance" class="pinned-item-meta muted-link ">
+                    <svg class="octicon octicon-tag" viewBox="0 0 16 16" version="1.1" width="16" height="16">
+                      <path fill-rule="evenodd"
+                        d="M2.5 7.775V2.75a.25.25 0 01.25-.25h5.025a.25.25 0 01.177.073l6.25 6.25a.25.25 0 010 .354l-5.025 5.025a.25.25 0 01-.354 0l-6.25-6.25a.25.25 0 01-.073-.177zm-1.5 0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 010 2.474l-5.026 5.026a1.75 1.75 0 01-2.474 0l-6.25-6.25A1.75 1.75 0 011 7.775zM6 5a1 1 0 100 2 1 1 0 000-2z">
+                      </path>
+                    </svg>
+                    performance
+                  </a>
+                  
+                  <a href="/tags/bloat" class="pinned-item-meta muted-link ">
+                    <svg class="octicon octicon-tag" viewBox="0 0 16 16" version="1.1" width="16" height="16">
+                      <path fill-rule="evenodd"
+                        d="M2.5 7.775V2.75a.25.25 0 01.25-.25h5.025a.25.25 0 01.177.073l6.25 6.25a.25.25 0 010 .354l-5.025 5.025a.25.25 0 01-.354 0l-6.25-6.25a.25.25 0 01-.073-.177zm-1.5 0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 010 2.474l-5.026 5.026a1.75 1.75 0 01-2.474 0l-6.25-6.25A1.75 1.75 0 011 7.775zM6 5a1 1 0 100 2 1 1 0 000-2z">
+                      </path>
+                    </svg>
+                    bloat
+                  </a>
+                  
+                  <a href="/tags/toast" class="pinned-item-meta muted-link ">
+                    <svg class="octicon octicon-tag" viewBox="0 0 16 16" version="1.1" width="16" height="16">
+                      <path fill-rule="evenodd"
+                        d="M2.5 7.775V2.75a.25.25 0 01.25-.25h5.025a.25.25 0 01.177.073l6.25 6.25a.25.25 0 010 .354l-5.025 5.025a.25.25 0 01-.354 0l-6.25-6.25a.25.25 0 01-.073-.177zm-1.5 0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 010 2.474l-5.026 5.026a1.75 1.75 0 01-2.474 0l-6.25-6.25A1.75 1.75 0 011 7.775zM6 5a1 1 0 100 2 1 1 0 000-2z">
+                      </path>
+                    </svg>
+                    toast
+                  </a>
+                  
+                  
+                </p>
+              </div>
+            </div>
+          </li>
+          
+          <li class="col-12 col-md-6 col-lg-6 mb-3 d-flex flex-content-stretch">
+            <div
+              class="Box pinned-item-list-item d-flex p-3 width-full js-pinned-item-list-item public source reorderable sortable-button-item">
+              <div class="pinned-item-list-item-content">
+                <div class="d-flex width-full flex-items-center position-relative">
+                  <svg class="octicon octicon-repo mr-2 text-gray flex-shrink-0" viewBox="0 0 16 16" version="1.1"
+                    width="16" height="16">
+                    <path fill-rule="evenodd"
+                      d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8zM5 12.25v3.25a.25.25 0 00.4.2l1.45-1.087a.25.25 0 01.3 0L8.6 15.7a.25.25 0 00.4-.2v-3.25a.25.25 0 00-.25-.25h-3.5a.25.25 0 00-.25.25z">
+                    </path>
+                  </svg>
+                  <a class="text-bold flex-auto min-width-0" href="https://spokey.co.uk/post/query-performance-improvement-part-1/">
+                    <span class="repo" title="Query Performance Improvement Part 1">Query Performance Improvement Part 1</span>
+                  </a>
+                </div>
+
+
+                <div name="summary" class="pinned-item-desc text-gray text-small d-block mt-2 mb-3">
+                  <h1 id="overview">Overview</h1>
+<p>Part 1 (this post) looks at some principles and introduces some of the tools in your arsenal.</p>
+<p><a href="/post/query-performance-improvement-part-2">Part 2</a> covers the dreaded PostgreSQL bloat issue as well as how TOAST can help performance, or not.</p>
+<p><a href="/post/query-performance-improvement-part-3">Part 3</a> dives deeper into identifying, investigating and mitigating slow queries.</p>
+<p><a href="/post/query-performance-improvement-part-4">Part 4</a> covers indexing.</p>
+<p><a href="/post/query-performance-improvement-part-5">Part 5</a> covers rewriting queries.</p>
+<h1 id="tldr">TL;DR</h1>
+<ul>
+<li>Scaling up or out is more expensive than spending a couple of hours optimising</li>
+<li>Get answers, not data</li>
+<li>Lazy load lookups</li>
+<li>Eliminate non-essential queries</li>
+<li>Don&rsquo;t use SERIALIZABLE isolation</li>
+<li>Make sure auto-analyze is running and have a manual ANALYZE schedule as a safety net</li>
+</ul>
+<h1 id="introduction">Introduction</h1>
+<p>Welcome to this series of blog posts which will hopefully walk you through everything you need to know about improving query performance, specifically in PostgreSQL. The basic principles apply to all databases, though, even if implementation differences mean that different databases find different things painful.</p>
+                </div>
+
+                <p class="mb-0 f6 text-gray">
+                  
+                  
+                  <a href="/tags/postgresql" class="pinned-item-meta muted-link ">
+                    <svg class="octicon octicon-tag" viewBox="0 0 16 16" version="1.1" width="16" height="16">
+                      <path fill-rule="evenodd"
+                        d="M2.5 7.775V2.75a.25.25 0 01.25-.25h5.025a.25.25 0 01.177.073l6.25 6.25a.25.25 0 010 .354l-5.025 5.025a.25.25 0 01-.354 0l-6.25-6.25a.25.25 0 01-.073-.177zm-1.5 0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 010 2.474l-5.026 5.026a1.75 1.75 0 01-2.474 0l-6.25-6.25A1.75 1.75 0 011 7.775zM6 5a1 1 0 100 2 1 1 0 000-2z">
+                      </path>
+                    </svg>
+                    postgresql
+                  </a>
+                  
+                  <a href="/tags/performance" class="pinned-item-meta muted-link ">
+                    <svg class="octicon octicon-tag" viewBox="0 0 16 16" version="1.1" width="16" height="16">
+                      <path fill-rule="evenodd"
+                        d="M2.5 7.775V2.75a.25.25 0 01.25-.25h5.025a.25.25 0 01.177.073l6.25 6.25a.25.25 0 010 .354l-5.025 5.025a.25.25 0 01-.354 0l-6.25-6.25a.25.25 0 01-.073-.177zm-1.5 0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 010 2.474l-5.026 5.026a1.75 1.75 0 01-2.474 0l-6.25-6.25A1.75 1.75 0 011 7.775zM6 5a1 1 0 100 2 1 1 0 000-2z">
+                      </path>
+                    </svg>
+                    performance
+                  </a>
+                  
+                  <a href="/tags/serializable" class="pinned-item-meta muted-link ">
+                    <svg class="octicon octicon-tag" viewBox="0 0 16 16" version="1.1" width="16" height="16">
+                      <path fill-rule="evenodd"
+                        d="M2.5 7.775V2.75a.25.25 0 01.25-.25h5.025a.25.25 0 01.177.073l6.25 6.25a.25.25 0 010 .354l-5.025 5.025a.25.25 0 01-.354 0l-6.25-6.25a.25.25 0 01-.073-.177zm-1.5 0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 010 2.474l-5.026 5.026a1.75 1.75 0 01-2.474 0l-6.25-6.25A1.75 1.75 0 011 7.775zM6 5a1 1 0 100 2 1 1 0 000-2z">
+                      </path>
+                    </svg>
+                    serializable
+                  </a>
+                  
+                  <a href="/tags/analyze" class="pinned-item-meta muted-link ">
+                    <svg class="octicon octicon-tag" viewBox="0 0 16 16" version="1.1" width="16" height="16">
+                      <path fill-rule="evenodd"
+                        d="M2.5 7.775V2.75a.25.25 0 01.25-.25h5.025a.25.25 0 01.177.073l6.25 6.25a.25.25 0 010 .354l-5.025 5.025a.25.25 0 01-.354 0l-6.25-6.25a.25.25 0 01-.073-.177zm-1.5 0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 010 2.474l-5.026 5.026a1.75 1.75 0 01-2.474 0l-6.25-6.25A1.75 1.75 0 011 7.775zM6 5a1 1 0 100 2 1 1 0 000-2z">
+                      </path>
+                    </svg>
+                    analyze
+                  </a>
+                  
+                  
+                </p>
+              </div>
+            </div>
+          </li>
+          
+          <li class="col-12 col-md-6 col-lg-6 mb-3 d-flex flex-content-stretch">
+            <div
+              class="Box pinned-item-list-item d-flex p-3 width-full js-pinned-item-list-item public source reorderable sortable-button-item">
+              <div class="pinned-item-list-item-content">
+                <div class="d-flex width-full flex-items-center position-relative">
+                  <svg class="octicon octicon-repo mr-2 text-gray flex-shrink-0" viewBox="0 0 16 16" version="1.1"
+                    width="16" height="16">
+                    <path fill-rule="evenodd"
+                      d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8zM5 12.25v3.25a.25.25 0 00.4.2l1.45-1.087a.25.25 0 01.3 0L8.6 15.7a.25.25 0 00.4-.2v-3.25a.25.25 0 00-.25-.25h-3.5a.25.25 0 00-.25.25z">
+                    </path>
+                  </svg>
+                  <a class="text-bold flex-auto min-width-0" href="https://spokey.co.uk/post/welcome/">
+                    <span class="repo" title="Welcome">Welcome</span>
+                  </a>
+                </div>
+
+
+                <div name="summary" class="pinned-item-desc text-gray text-small d-block mt-2 mb-3">
+                  <p>Welcome to my humble blog, a venue for mithering, wittering, raging, moaning and occasionally useful posts.</p>
                 </div>
 
                 <p class="mb-0 f6 text-gray">
@@ -521,9 +944,39 @@
     
     <div class="mt-4 position-relative" id="contributions" data='[
 {
-  "title": "Test",
-  "link": "https://spokey.co.uk/post/test/",
-  "publishDate": "2025-04-25%2010:06:00"
+  "title": "Query%20Performance%20Improvement%20Part%205",
+  "link": "https://spokey.co.uk/post/query-performance-improvement-part-5/",
+  "publishDate": "2025-04-23%2012:07:07"
+},
+
+{
+  "title": "Query%20Performance%20Improvement%20Part%204",
+  "link": "https://spokey.co.uk/post/query-performance-improvement-part-4/",
+  "publishDate": "2025-04-23%2012:07:01"
+},
+
+{
+  "title": "Query%20Performance%20Improvement%20Part%203",
+  "link": "https://spokey.co.uk/post/query-performance-improvement-part-3/",
+  "publishDate": "2025-04-20%2013:55:43"
+},
+
+{
+  "title": "Query%20Performance%20Improvement%20Part%202",
+  "link": "https://spokey.co.uk/post/query-performance-improvement-part-2/",
+  "publishDate": "2025-04-20%2010:53:36"
+},
+
+{
+  "title": "Query%20Performance%20Improvement%20Part%201",
+  "link": "https://spokey.co.uk/post/query-performance-improvement-part-1/",
+  "publishDate": "2025-04-19%2001:30:19"
+},
+
+{
+  "title": "Welcome",
+  "link": "https://spokey.co.uk/post/welcome/",
+  "publishDate": "2025-04-18%2020:48:53"
 }
 ]'>
       <div class="js-yearly-contributions">

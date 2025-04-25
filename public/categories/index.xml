@@ -6,6 +6,28 @@
     <description>Recent content in Categories on Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
+    <lastBuildDate>Fri, 25 Apr 2025 14:18:39 +0100</lastBuildDate>
     <atom:link href="https://spokey.co.uk/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Databases</title>
+      <link>https://spokey.co.uk/categories/databases/</link>
+      <pubDate>Wed, 23 Apr 2025 12:07:07 +0100</pubDate>
+      <guid>https://spokey.co.uk/categories/databases/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Performance</title>
+      <link>https://spokey.co.uk/categories/performance/</link>
+      <pubDate>Wed, 23 Apr 2025 12:07:07 +0100</pubDate>
+      <guid>https://spokey.co.uk/categories/performance/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Postgresql</title>
+      <link>https://spokey.co.uk/categories/postgresql/</link>
+      <pubDate>Wed, 23 Apr 2025 12:07:07 +0100</pubDate>
+      <guid>https://spokey.co.uk/categories/postgresql/</guid>
+      <description></description>
+    </item>
   </channel>
 </rss>
