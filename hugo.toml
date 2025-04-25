@@ -29,7 +29,7 @@ pygmentsUseClasses = true
     repo = "SpokeyWheeler.github.io"
     owner = "SpokeyWheeler"
     admin = "SpokeyWheeler"
-    id = "location.href.match('/(?<=posts/)(.*)(?=/)/')[1]"
+    id = "location.href.match('/(?<=post/)(.*)(?=/)/')[1]"
     labels = "gitalk"
     perPage = 15
     pagerDirection = "last"
