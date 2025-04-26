@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Automation on Blog</title>
+    <link>http://localhost:1313/categories/automation/</link>
+    <description>Recent content in Automation on Blog</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 26 Apr 2025 10:45:27 +0100</lastBuildDate>
+    <atom:link href="http://localhost:1313/categories/automation/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Ansible Antipatterns</title>
+      <link>http://localhost:1313/post/ansible-antipatterns/</link>
+      <pubDate>Sat, 26 Apr 2025 10:32:52 +0100</pubDate>
+      <guid>http://localhost:1313/post/ansible-antipatterns/</guid>
+      <description>&lt;h1 id=&#34;ansible-antipatterns&#34;&gt;Ansible Antipatterns&lt;/h1&gt;&#xA;&lt;p&gt;Lots of people tell you how to do things properly. Here are some things I&amp;rsquo;ve inherited in our Ansible that break things in horrible ways.&lt;/p&gt;&#xA;&lt;p&gt;&lt;img src=&#34;http://localhost:1313/images/carlos-irineu-da-costa-eMc0lpn1P60-unsplash.jpg&#34; alt=&#34;Workshop&#34;&gt;&lt;/p&gt;&#xA;&lt;h1 id=&#34;coupling&#34;&gt;Coupling&lt;/h1&gt;&#xA;&lt;p&gt;Coupling is (roughly) how interconnected different components of a system are. One of the most common patterns in modern software engineering is loose coupling.&lt;/p&gt;&#xA;&lt;p&gt;The idea of separating things across an API so that you can change things behind the API without having to change other components is very powerful.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

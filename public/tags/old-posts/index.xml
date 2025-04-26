@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Old Posts on Blog</title>
+    <link>http://localhost:1313/tags/old-posts/</link>
+    <description>Recent content in Old Posts on Blog</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 26 Apr 2025 10:26:58 +0100</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/old-posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The Forgotten Aspect of DBRE</title>
+      <link>http://localhost:1313/post/the-forgotten-aspect-of-dbre/</link>
+      <pubDate>Sat, 26 Apr 2025 09:51:11 +0100</pubDate>
+      <guid>http://localhost:1313/post/the-forgotten-aspect-of-dbre/</guid>
+      <description>&lt;hr&gt;&#xA;&lt;h1 id=&#34;the-forgotten-aspect-ofdbre&#34;&gt;The Forgotten Aspect of DBRE&lt;/h1&gt;&#xA;&lt;p&gt;&lt;a href=&#34;http://localhost:1313/images/TheHorror.jpg&#34;&gt;The horror&amp;hellip; the horror&amp;hellip;&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;I am a great fan of the DBRE book, and an avid follower of the authors&amp;rsquo; podcasts, videos and blog posts.&lt;/p&gt;&#xA;&lt;p&gt;But there is one glaring omission that I can&amp;rsquo;t find discussed properly anywhere: upgrades.&lt;/p&gt;&#xA;&lt;p&gt;You need to patch to fix bugs or address vulnerabilities. You need to upgrade for support and new features that developers want.&lt;/p&gt;&#xA;&lt;p&gt;I understand that site-specific needs make it hard to proclaim detailed edicts. But the DBRE book isn&amp;rsquo;t about detailed edicts. It&amp;rsquo;s about principles and a way of working.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
