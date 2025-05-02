@@ -26,6 +26,7 @@ Part 1 (this post) looks at some principles and introduces some of the tools in 
 - Eliminate non-essential queries
 - Don't use SERIALIZABLE isolation
 - Make sure auto-analyze is running and have a manual ANALYZE schedule as a safety net
+- Denormalising is usually the wrong solution to performance issues
 
 # Introduction
 
@@ -39,7 +40,7 @@ It's for anyone who works with databases, or is about to work with databases and
 
 I've tried to make this as comprehensive as possible, starting with reasoning about performance. However, I'm sure I'll have missed something, or some new feature or switch will come along that I don't address. So, *caveat emptor*!
 
-If your hair is on fire and you need to try something now, rather than reading through a philosophical treatise first, you can jump to part three of this series, which offers thoughts on indexing and rewriting queries that are most likely to have a direct impact on performance.
+If your hair is on fire and you need to try something now, rather than reading through a philosophical treatise first, you can jump to [Part 5](/post/query-performance-improvement-part-5) of this series, which offers thoughts on indexing and rewriting queries that are most likely to have a direct impact on performance.
 
 However, if you're looking to make more fundamental changes to working with a database, then I strongly recommend reading the blogs in order.
 
@@ -69,7 +70,7 @@ Static lookup tables should only be lazy loaded once, the first time they are us
 
 ### Do I even need this query?
 
-Something else to consider (and it really isn't done often enough!) is this: do I actually need this query? Does it provide me with any value? An example is where you're writing database rows to a message queue and mark them as sent. It's frustratingly common that the developer will do a count of unsent rows before trying to write a batch to the queue. Why do the count? Why not just try to do the write and if there are no rows to process, just drop out?
+Something else to consider (and it really isn't done often enough!) is this: do I actually need this query? Does it provide me with any value? An example is where you're writing database rows to a message queue and mark them as sent. It's frustratingly common that the developer will do a count of unsent rows before trying to write a batch to the queue. Why do the count? Why not just try to do the write and if there are no rows to process, just drop out? (If this sounds picky, counting a number of rows in a large table can be so slow that it blows your response time SLO!)
 
 # SERIALIZABLE isolation
 
@@ -81,7 +82,7 @@ My reading of the [academic paper](https://arxiv.org/pdf/1208.4179) behind Postg
 
 Furthermore, if query A gets considered for a conflict by query B, query A will be considered for a conflict by other queries as long as a query B is still running - even if query A has actually already completed! This means a lot of queries can fail for no reason.
 
-As an aside, I've been doing database "stuff" for 40 years now, and I'd never come across SERIALIZABLE (or its equivalent) until my last job, where I discovered why I'd never come across it before, and why I hope I never come across it again. Save yourself from a world full of pain and don't use SERIALIZABLE or its equivalent in other databases.
+As an aside, I've been doing database "stuff" for 40 years now, and I'd never come across SERIALIZABLE (or its equivalent) until my last job, where I discovered why I'd never come across it before, and why I hope I never come across it again. Save yourself from a world full of pain and don't use SERIALIZABLE (or its equivalent in other databases.)
 
 # ANALYZE
 
@@ -93,13 +94,21 @@ For example, let's assume we have a table with an index, but the table only has 
 
 Current versions of PostgreSQL tend to run auto-analyze, but it's worth forcing a manual ANALYZE on every table on a schedule based on the volatility of the table. Static lookup tables can be analyzed once a month, large and steadily growing tables once a week, and tables that oscillate wildly or grow rapidly should be done at least daily. This is primarily a safety measure and is not a sufficient substitute for auto-analyze.
 
+# 3NF / 4NF
+
+One frequently observed suggestion for improving performance is to denormalise your database to avoid the cost of joining tables. In truth, PostgreSQL has a plethora of different strategies for joining tables, so an individual join is unlikely to be problematic as long as optimiser statistics are current. Relational databases have honed and polished their handling of joins over decades.
+
+It only becomes likely to cause an issue when you have five or more joins in a query involving large numbers of rows and poor indexing, which is a combination I personally have rarely encountered. I would suggest that if you are regularly joining five or more times in a single query, you may have a different issue with your database design.
+
 # Summary
 
 In this post, we looked at:
 - why you should optimise rather than just scaling up (or out)
 - principles of efficient database use
+- the benefits of removing queries
 - why you should avoid using SERIALIZABLE isolation
 - the basics of keeping optimiser statistics
+- why normalising a database is normally (ha! ha!) not a problem
 
 ---
 

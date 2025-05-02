@@ -2,18 +2,25 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Old Posts on Blog</title>
-    <link>http://localhost:1313/tags/old-posts/</link>
+    <link>https://spokey.co.uk/tags/old-posts/</link>
     <description>Recent content in Old Posts on Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 26 Apr 2025 10:26:58 +0100</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/old-posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 26 Apr 2025 10:45:27 +0100</lastBuildDate>
+    <atom:link href="https://spokey.co.uk/tags/old-posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Ansible Antipatterns</title>
+      <link>https://spokey.co.uk/post/ansible-antipatterns/</link>
+      <pubDate>Sat, 26 Apr 2025 10:32:52 +0100</pubDate>
+      <guid>https://spokey.co.uk/post/ansible-antipatterns/</guid>
+      <description>&lt;h1 id=&#34;ansible-antipatterns&#34;&gt;Ansible Antipatterns&lt;/h1&gt;&#xA;&lt;p&gt;Lots of people tell you how to do things properly. Here are some things I&amp;rsquo;ve inherited in our Ansible that break things in horrible ways.&lt;/p&gt;&#xA;&lt;p&gt;&lt;img src=&#34;https://spokey.co.uk/images/carlos-irineu-da-costa-eMc0lpn1P60-unsplash.jpg&#34; alt=&#34;Workshop&#34;&gt;&lt;/p&gt;&#xA;&lt;h1 id=&#34;coupling&#34;&gt;Coupling&lt;/h1&gt;&#xA;&lt;p&gt;Coupling is (roughly) how interconnected different components of a system are. One of the most common patterns in modern software engineering is loose coupling.&lt;/p&gt;&#xA;&lt;p&gt;The idea of separating things across an API so that you can change things behind the API without having to change other components is very powerful.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>The Forgotten Aspect of DBRE</title>
-      <link>http://localhost:1313/post/the-forgotten-aspect-of-dbre/</link>
+      <link>https://spokey.co.uk/post/the-forgotten-aspect-of-dbre/</link>
       <pubDate>Sat, 26 Apr 2025 09:51:11 +0100</pubDate>
-      <guid>http://localhost:1313/post/the-forgotten-aspect-of-dbre/</guid>
-      <description>&lt;hr&gt;&#xA;&lt;h1 id=&#34;the-forgotten-aspect-ofdbre&#34;&gt;The Forgotten Aspect of DBRE&lt;/h1&gt;&#xA;&lt;p&gt;&lt;a href=&#34;http://localhost:1313/images/TheHorror.jpg&#34;&gt;The horror&amp;hellip; the horror&amp;hellip;&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;I am a great fan of the DBRE book, and an avid follower of the authors&amp;rsquo; podcasts, videos and blog posts.&lt;/p&gt;&#xA;&lt;p&gt;But there is one glaring omission that I can&amp;rsquo;t find discussed properly anywhere: upgrades.&lt;/p&gt;&#xA;&lt;p&gt;You need to patch to fix bugs or address vulnerabilities. You need to upgrade for support and new features that developers want.&lt;/p&gt;&#xA;&lt;p&gt;I understand that site-specific needs make it hard to proclaim detailed edicts. But the DBRE book isn&amp;rsquo;t about detailed edicts. It&amp;rsquo;s about principles and a way of working.&lt;/p&gt;</description>
+      <guid>https://spokey.co.uk/post/the-forgotten-aspect-of-dbre/</guid>
+      <description>&lt;hr&gt;&#xA;&lt;h1 id=&#34;the-forgotten-aspect-ofdbre&#34;&gt;The Forgotten Aspect of DBRE&lt;/h1&gt;&#xA;&lt;p&gt;&lt;img src=&#34;https://spokey.co.uk/images/TheHorror.jpg&#34; alt=&#34;The horror&amp;hellip; the horror&amp;hellip;&#34;&gt;&lt;/p&gt;&#xA;&lt;p&gt;I am a great fan of the DBRE book, and an avid follower of the authors&amp;rsquo; podcasts, videos and blog posts.&lt;/p&gt;&#xA;&lt;p&gt;But there is one glaring omission that I can&amp;rsquo;t find discussed properly anywhere: upgrades.&lt;/p&gt;&#xA;&lt;p&gt;You need to patch to fix bugs or address vulnerabilities. You need to upgrade for support and new features that developers want.&lt;/p&gt;&#xA;&lt;p&gt;I understand that site-specific needs make it hard to proclaim detailed edicts. But the DBRE book isn&amp;rsquo;t about detailed edicts. It&amp;rsquo;s about principles and a way of working.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

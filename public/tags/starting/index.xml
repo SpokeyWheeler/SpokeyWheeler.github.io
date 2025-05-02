@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Starting on Blog</title>
-    <link>http://localhost:1313/tags/starting/</link>
+    <link>https://spokey.co.uk/tags/starting/</link>
     <description>Recent content in Starting on Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <lastBuildDate>Sat, 26 Apr 2025 11:09:16 +0100</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/starting/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://spokey.co.uk/tags/starting/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>DBRE: What Is Your MVP?</title>
-      <link>http://localhost:1313/post/dbre-what-is-your-mvp/</link>
+      <link>https://spokey.co.uk/post/dbre-what-is-your-mvp/</link>
       <pubDate>Fri, 25 Apr 2025 20:06:00 +0100</pubDate>
-      <guid>http://localhost:1313/post/dbre-what-is-your-mvp/</guid>
-      <description>&lt;h1 id=&#34;or-a-litany-of-errors&#34;&gt;Or, “a litany of errors”&lt;/h1&gt;&#xA;&lt;p&gt;The lean model for continuous improvement looks something like this:&lt;/p&gt;&#xA;&lt;p&gt;&lt;img src=&#34;http://localhost:1313/images/LeanModel.png&#34; alt=&#34;Lean&#34;&gt;&lt;/p&gt;&#xA;&lt;p&gt;Where you start is a matter of some debate, as is the direction of flow. However, most people start with the idea of building a Minimum Viable Product (MVP) as an experiment; measuring the results; and then learning from the measures they recorded, which then feeds into the next build of the product.&lt;/p&gt;&#xA;&lt;p&gt;What is an MVP for a Database Reliability Engineer (DBRE)? A good, old-fashioned manual install. A best practices manual install.&lt;/p&gt;</description>
+      <guid>https://spokey.co.uk/post/dbre-what-is-your-mvp/</guid>
+      <description>&lt;h1 id=&#34;or-a-litany-of-errors&#34;&gt;Or, “a litany of errors”&lt;/h1&gt;&#xA;&lt;p&gt;The lean model for continuous improvement looks something like this:&lt;/p&gt;&#xA;&lt;p&gt;&lt;img src=&#34;https://spokey.co.uk/images/LeanModel.png&#34; alt=&#34;Lean&#34;&gt;&lt;/p&gt;&#xA;&lt;p&gt;Where you start is a matter of some debate, as is the direction of flow. However, most people start with the idea of building a Minimum Viable Product (MVP) as an experiment; measuring the results; and then learning from the measures they recorded, which then feeds into the next build of the product.&lt;/p&gt;&#xA;&lt;p&gt;What is an MVP for a Database Reliability Engineer (DBRE)? A good, old-fashioned manual install. A best practices manual install.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

@@ -2,18 +2,39 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Dbre on Blog</title>
-    <link>http://localhost:1313/categories/dbre/</link>
+    <link>https://spokey.co.uk/categories/dbre/</link>
     <description>Recent content in Dbre on Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 26 Apr 2025 10:26:58 +0100</lastBuildDate>
-    <atom:link href="http://localhost:1313/categories/dbre/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 26 Apr 2025 11:09:16 +0100</lastBuildDate>
+    <atom:link href="https://spokey.co.uk/categories/dbre/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Always Use a Surrogate Primary Key</title>
+      <link>https://spokey.co.uk/post/always-use-a-surrogate-primary-key/</link>
+      <pubDate>Sat, 26 Apr 2025 10:49:47 +0100</pubDate>
+      <guid>https://spokey.co.uk/post/always-use-a-surrogate-primary-key/</guid>
+      <description>&lt;h1 id=&#34;always-use-a-surrogate-primarykey&#34;&gt;Always use a Surrogate Primary Key&lt;/h1&gt;&#xA;&lt;p&gt;Many years ago, when I was still in possession of my hair, I entered a subcontract to develop a system to replace paper-based case files for a quango in South Africa.&lt;/p&gt;&#xA;&lt;p&gt;The main contract was held by a large development shop that specialised in a related, but different field. They had given one of their systems analysts the task of analysing the system (duh!) but had no spare capacity to code it, so they farmed it out to me.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Ansible Antipatterns</title>
+      <link>https://spokey.co.uk/post/ansible-antipatterns/</link>
+      <pubDate>Sat, 26 Apr 2025 10:32:52 +0100</pubDate>
+      <guid>https://spokey.co.uk/post/ansible-antipatterns/</guid>
+      <description>&lt;h1 id=&#34;ansible-antipatterns&#34;&gt;Ansible Antipatterns&lt;/h1&gt;&#xA;&lt;p&gt;Lots of people tell you how to do things properly. Here are some things I&amp;rsquo;ve inherited in our Ansible that break things in horrible ways.&lt;/p&gt;&#xA;&lt;p&gt;&lt;img src=&#34;https://spokey.co.uk/images/carlos-irineu-da-costa-eMc0lpn1P60-unsplash.jpg&#34; alt=&#34;Workshop&#34;&gt;&lt;/p&gt;&#xA;&lt;h1 id=&#34;coupling&#34;&gt;Coupling&lt;/h1&gt;&#xA;&lt;p&gt;Coupling is (roughly) how interconnected different components of a system are. One of the most common patterns in modern software engineering is loose coupling.&lt;/p&gt;&#xA;&lt;p&gt;The idea of separating things across an API so that you can change things behind the API without having to change other components is very powerful.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>The Forgotten Aspect of DBRE</title>
-      <link>http://localhost:1313/post/the-forgotten-aspect-of-dbre/</link>
+      <link>https://spokey.co.uk/post/the-forgotten-aspect-of-dbre/</link>
       <pubDate>Sat, 26 Apr 2025 09:51:11 +0100</pubDate>
-      <guid>http://localhost:1313/post/the-forgotten-aspect-of-dbre/</guid>
-      <description>&lt;hr&gt;&#xA;&lt;h1 id=&#34;the-forgotten-aspect-ofdbre&#34;&gt;The Forgotten Aspect of DBRE&lt;/h1&gt;&#xA;&lt;p&gt;&lt;a href=&#34;http://localhost:1313/images/TheHorror.jpg&#34;&gt;The horror&amp;hellip; the horror&amp;hellip;&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;I am a great fan of the DBRE book, and an avid follower of the authors&amp;rsquo; podcasts, videos and blog posts.&lt;/p&gt;&#xA;&lt;p&gt;But there is one glaring omission that I can&amp;rsquo;t find discussed properly anywhere: upgrades.&lt;/p&gt;&#xA;&lt;p&gt;You need to patch to fix bugs or address vulnerabilities. You need to upgrade for support and new features that developers want.&lt;/p&gt;&#xA;&lt;p&gt;I understand that site-specific needs make it hard to proclaim detailed edicts. But the DBRE book isn&amp;rsquo;t about detailed edicts. It&amp;rsquo;s about principles and a way of working.&lt;/p&gt;</description>
+      <guid>https://spokey.co.uk/post/the-forgotten-aspect-of-dbre/</guid>
+      <description>&lt;hr&gt;&#xA;&lt;h1 id=&#34;the-forgotten-aspect-ofdbre&#34;&gt;The Forgotten Aspect of DBRE&lt;/h1&gt;&#xA;&lt;p&gt;&lt;img src=&#34;https://spokey.co.uk/images/TheHorror.jpg&#34; alt=&#34;The horror&amp;hellip; the horror&amp;hellip;&#34;&gt;&lt;/p&gt;&#xA;&lt;p&gt;I am a great fan of the DBRE book, and an avid follower of the authors&amp;rsquo; podcasts, videos and blog posts.&lt;/p&gt;&#xA;&lt;p&gt;But there is one glaring omission that I can&amp;rsquo;t find discussed properly anywhere: upgrades.&lt;/p&gt;&#xA;&lt;p&gt;You need to patch to fix bugs or address vulnerabilities. You need to upgrade for support and new features that developers want.&lt;/p&gt;&#xA;&lt;p&gt;I understand that site-specific needs make it hard to proclaim detailed edicts. But the DBRE book isn&amp;rsquo;t about detailed edicts. It&amp;rsquo;s about principles and a way of working.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>DBRE: What Is Your MVP?</title>
+      <link>https://spokey.co.uk/post/dbre-what-is-your-mvp/</link>
+      <pubDate>Fri, 25 Apr 2025 20:06:00 +0100</pubDate>
+      <guid>https://spokey.co.uk/post/dbre-what-is-your-mvp/</guid>
+      <description>&lt;h1 id=&#34;or-a-litany-of-errors&#34;&gt;Or, “a litany of errors”&lt;/h1&gt;&#xA;&lt;p&gt;The lean model for continuous improvement looks something like this:&lt;/p&gt;&#xA;&lt;p&gt;&lt;img src=&#34;https://spokey.co.uk/images/LeanModel.png&#34; alt=&#34;Lean&#34;&gt;&lt;/p&gt;&#xA;&lt;p&gt;Where you start is a matter of some debate, as is the direction of flow. However, most people start with the idea of building a Minimum Viable Product (MVP) as an experiment; measuring the results; and then learning from the measures they recorded, which then feeds into the next build of the product.&lt;/p&gt;&#xA;&lt;p&gt;What is an MVP for a Database Reliability Engineer (DBRE)? A good, old-fashioned manual install. A best practices manual install.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

@@ -2,52 +2,115 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on Blog</title>
-    <link>http://localhost:1313/tags/</link>
+    <link>https://spokey.co.uk/tags/</link>
     <description>Recent content in Tags on Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 25 Apr 2025 14:18:39 +0100</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 02 May 2025 13:50:29 +0100</lastBuildDate>
+    <atom:link href="https://spokey.co.uk/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Database Design</title>
+      <link>https://spokey.co.uk/tags/database-design/</link>
+      <pubDate>Sat, 26 Apr 2025 10:49:47 +0100</pubDate>
+      <guid>https://spokey.co.uk/tags/database-design/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Dbre</title>
+      <link>https://spokey.co.uk/tags/dbre/</link>
+      <pubDate>Sat, 26 Apr 2025 10:49:47 +0100</pubDate>
+      <guid>https://spokey.co.uk/tags/dbre/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Normalising</title>
+      <link>https://spokey.co.uk/tags/normalising/</link>
+      <pubDate>Sat, 26 Apr 2025 10:49:47 +0100</pubDate>
+      <guid>https://spokey.co.uk/tags/normalising/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Ansible</title>
+      <link>https://spokey.co.uk/tags/ansible/</link>
+      <pubDate>Sat, 26 Apr 2025 10:32:52 +0100</pubDate>
+      <guid>https://spokey.co.uk/tags/ansible/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Automation</title>
+      <link>https://spokey.co.uk/tags/automation/</link>
+      <pubDate>Sat, 26 Apr 2025 10:32:52 +0100</pubDate>
+      <guid>https://spokey.co.uk/tags/automation/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Old Posts</title>
+      <link>https://spokey.co.uk/tags/old-posts/</link>
+      <pubDate>Sat, 26 Apr 2025 10:32:52 +0100</pubDate>
+      <guid>https://spokey.co.uk/tags/old-posts/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Upgrades</title>
+      <link>https://spokey.co.uk/tags/upgrades/</link>
+      <pubDate>Sat, 26 Apr 2025 09:51:11 +0100</pubDate>
+      <guid>https://spokey.co.uk/tags/upgrades/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Starting</title>
+      <link>https://spokey.co.uk/tags/starting/</link>
+      <pubDate>Fri, 25 Apr 2025 20:06:00 +0100</pubDate>
+      <guid>https://spokey.co.uk/tags/starting/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Toil</title>
+      <link>https://spokey.co.uk/tags/toil/</link>
+      <pubDate>Fri, 25 Apr 2025 20:06:00 +0100</pubDate>
+      <guid>https://spokey.co.uk/tags/toil/</guid>
+      <description></description>
+    </item>
     <item>
       <title>Performance</title>
-      <link>http://localhost:1313/tags/performance/</link>
+      <link>https://spokey.co.uk/tags/performance/</link>
       <pubDate>Wed, 23 Apr 2025 12:07:07 +0100</pubDate>
-      <guid>http://localhost:1313/tags/performance/</guid>
+      <guid>https://spokey.co.uk/tags/performance/</guid>
       <description></description>
     </item>
     <item>
       <title>Postgresql</title>
-      <link>http://localhost:1313/tags/postgresql/</link>
+      <link>https://spokey.co.uk/tags/postgresql/</link>
       <pubDate>Wed, 23 Apr 2025 12:07:07 +0100</pubDate>
-      <guid>http://localhost:1313/tags/postgresql/</guid>
+      <guid>https://spokey.co.uk/tags/postgresql/</guid>
       <description></description>
     </item>
     <item>
       <title>Bloat</title>
-      <link>http://localhost:1313/tags/bloat/</link>
+      <link>https://spokey.co.uk/tags/bloat/</link>
       <pubDate>Sun, 20 Apr 2025 10:53:36 +0100</pubDate>
-      <guid>http://localhost:1313/tags/bloat/</guid>
+      <guid>https://spokey.co.uk/tags/bloat/</guid>
       <description></description>
     </item>
     <item>
       <title>Toast</title>
-      <link>http://localhost:1313/tags/toast/</link>
+      <link>https://spokey.co.uk/tags/toast/</link>
       <pubDate>Sun, 20 Apr 2025 10:53:36 +0100</pubDate>
-      <guid>http://localhost:1313/tags/toast/</guid>
+      <guid>https://spokey.co.uk/tags/toast/</guid>
       <description></description>
     </item>
     <item>
       <title>Analyze</title>
-      <link>http://localhost:1313/tags/analyze/</link>
+      <link>https://spokey.co.uk/tags/analyze/</link>
       <pubDate>Sat, 19 Apr 2025 01:30:19 +0100</pubDate>
-      <guid>http://localhost:1313/tags/analyze/</guid>
+      <guid>https://spokey.co.uk/tags/analyze/</guid>
       <description></description>
     </item>
     <item>
       <title>Serializable</title>
-      <link>http://localhost:1313/tags/serializable/</link>
+      <link>https://spokey.co.uk/tags/serializable/</link>
       <pubDate>Sat, 19 Apr 2025 01:30:19 +0100</pubDate>
-      <guid>http://localhost:1313/tags/serializable/</guid>
+      <guid>https://spokey.co.uk/tags/serializable/</guid>
       <description></description>
     </item>
   </channel>

@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Database Design on Blog</title>
-    <link>http://localhost:1313/tags/database-design/</link>
+    <link>https://spokey.co.uk/tags/database-design/</link>
     <description>Recent content in Database Design on Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <lastBuildDate>Sat, 26 Apr 2025 11:05:30 +0100</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/database-design/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://spokey.co.uk/tags/database-design/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Always Use a Surrogate Primary Key</title>
-      <link>http://localhost:1313/post/always-use-a-surrogate-primary-key/</link>
+      <link>https://spokey.co.uk/post/always-use-a-surrogate-primary-key/</link>
       <pubDate>Sat, 26 Apr 2025 10:49:47 +0100</pubDate>
-      <guid>http://localhost:1313/post/always-use-a-surrogate-primary-key/</guid>
+      <guid>https://spokey.co.uk/post/always-use-a-surrogate-primary-key/</guid>
       <description>&lt;h1 id=&#34;always-use-a-surrogate-primarykey&#34;&gt;Always use a Surrogate Primary Key&lt;/h1&gt;&#xA;&lt;p&gt;Many years ago, when I was still in possession of my hair, I entered a subcontract to develop a system to replace paper-based case files for a quango in South Africa.&lt;/p&gt;&#xA;&lt;p&gt;The main contract was held by a large development shop that specialised in a related, but different field. They had given one of their systems analysts the task of analysing the system (duh!) but had no spare capacity to code it, so they farmed it out to me.&lt;/p&gt;</description>
     </item>
   </channel>

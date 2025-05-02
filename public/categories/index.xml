@@ -2,31 +2,52 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Categories on Blog</title>
-    <link>http://localhost:1313/categories/</link>
+    <link>https://spokey.co.uk/categories/</link>
     <description>Recent content in Categories on Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 25 Apr 2025 14:18:39 +0100</lastBuildDate>
-    <atom:link href="http://localhost:1313/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 02 May 2025 13:50:29 +0100</lastBuildDate>
+    <atom:link href="https://spokey.co.uk/categories/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Databases</title>
-      <link>http://localhost:1313/categories/databases/</link>
-      <pubDate>Wed, 23 Apr 2025 12:07:07 +0100</pubDate>
-      <guid>http://localhost:1313/categories/databases/</guid>
+      <link>https://spokey.co.uk/categories/databases/</link>
+      <pubDate>Sat, 26 Apr 2025 10:49:47 +0100</pubDate>
+      <guid>https://spokey.co.uk/categories/databases/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Dbre</title>
+      <link>https://spokey.co.uk/categories/dbre/</link>
+      <pubDate>Sat, 26 Apr 2025 10:49:47 +0100</pubDate>
+      <guid>https://spokey.co.uk/categories/dbre/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Design</title>
+      <link>https://spokey.co.uk/categories/design/</link>
+      <pubDate>Sat, 26 Apr 2025 10:49:47 +0100</pubDate>
+      <guid>https://spokey.co.uk/categories/design/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Automation</title>
+      <link>https://spokey.co.uk/categories/automation/</link>
+      <pubDate>Sat, 26 Apr 2025 10:32:52 +0100</pubDate>
+      <guid>https://spokey.co.uk/categories/automation/</guid>
       <description></description>
     </item>
     <item>
       <title>Performance</title>
-      <link>http://localhost:1313/categories/performance/</link>
+      <link>https://spokey.co.uk/categories/performance/</link>
       <pubDate>Wed, 23 Apr 2025 12:07:07 +0100</pubDate>
-      <guid>http://localhost:1313/categories/performance/</guid>
+      <guid>https://spokey.co.uk/categories/performance/</guid>
       <description></description>
     </item>
     <item>
       <title>Postgresql</title>
-      <link>http://localhost:1313/categories/postgresql/</link>
+      <link>https://spokey.co.uk/categories/postgresql/</link>
       <pubDate>Wed, 23 Apr 2025 12:07:07 +0100</pubDate>
-      <guid>http://localhost:1313/categories/postgresql/</guid>
+      <guid>https://spokey.co.uk/categories/postgresql/</guid>
       <description></description>
     </item>
   </channel>

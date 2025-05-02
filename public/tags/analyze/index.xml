@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Analyze on Blog</title>
-    <link>http://localhost:1313/tags/analyze/</link>
+    <link>https://spokey.co.uk/tags/analyze/</link>
     <description>Recent content in Analyze on Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 24 Apr 2025 12:49:37 +0100</lastBuildDate>
-    <atom:link href="http://localhost:1313/tags/analyze/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 02 May 2025 13:50:29 +0100</lastBuildDate>
+    <atom:link href="https://spokey.co.uk/tags/analyze/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Query Performance Improvement Part 1</title>
-      <link>http://localhost:1313/post/query-performance-improvement-part-1/</link>
+      <link>https://spokey.co.uk/post/query-performance-improvement-part-1/</link>
       <pubDate>Sat, 19 Apr 2025 01:30:19 +0100</pubDate>
-      <guid>http://localhost:1313/post/query-performance-improvement-part-1/</guid>
-      <description>&lt;h1 id=&#34;overview&#34;&gt;Overview&lt;/h1&gt;&#xA;&lt;p&gt;Part 1 (this post) looks at some principles and introduces some of the tools in your arsenal.&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;http://localhost:1313/post/query-performance-improvement-part-2&#34;&gt;Part 2&lt;/a&gt; covers the dreaded PostgreSQL bloat issue as well as how TOAST can help performance, or not.&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;http://localhost:1313/post/query-performance-improvement-part-3&#34;&gt;Part 3&lt;/a&gt; dives deeper into identifying, investigating and mitigating slow queries.&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;http://localhost:1313/post/query-performance-improvement-part-4&#34;&gt;Part 4&lt;/a&gt; covers indexing.&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;http://localhost:1313/post/query-performance-improvement-part-5&#34;&gt;Part 5&lt;/a&gt; covers rewriting queries.&lt;/p&gt;&#xA;&lt;h1 id=&#34;tldr&#34;&gt;TL;DR&lt;/h1&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Scaling up or out is more expensive than spending a couple of hours optimising&lt;/li&gt;&#xA;&lt;li&gt;Get answers, not data&lt;/li&gt;&#xA;&lt;li&gt;Lazy load lookups&lt;/li&gt;&#xA;&lt;li&gt;Eliminate non-essential queries&lt;/li&gt;&#xA;&lt;li&gt;Don&amp;rsquo;t use SERIALIZABLE isolation&lt;/li&gt;&#xA;&lt;li&gt;Make sure auto-analyze is running and have a manual ANALYZE schedule as a safety net&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;&#xA;&lt;p&gt;Welcome to this series of blog posts which will hopefully walk you through everything you need to know about improving query performance, specifically in PostgreSQL. The basic principles apply to all databases, though, even if implementation differences mean that different databases find different things painful.&lt;/p&gt;</description>
+      <guid>https://spokey.co.uk/post/query-performance-improvement-part-1/</guid>
+      <description>&lt;h1 id=&#34;overview&#34;&gt;Overview&lt;/h1&gt;&#xA;&lt;p&gt;Part 1 (this post) looks at some principles and introduces some of the tools in your arsenal.&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;https://spokey.co.uk/post/query-performance-improvement-part-2&#34;&gt;Part 2&lt;/a&gt; covers the dreaded PostgreSQL bloat issue as well as how TOAST can help performance, or not.&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;https://spokey.co.uk/post/query-performance-improvement-part-3&#34;&gt;Part 3&lt;/a&gt; dives deeper into identifying, investigating and mitigating slow queries.&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;https://spokey.co.uk/post/query-performance-improvement-part-4&#34;&gt;Part 4&lt;/a&gt; covers indexing.&lt;/p&gt;&#xA;&lt;p&gt;&lt;a href=&#34;https://spokey.co.uk/post/query-performance-improvement-part-5&#34;&gt;Part 5&lt;/a&gt; covers rewriting queries.&lt;/p&gt;&#xA;&lt;h1 id=&#34;tldr&#34;&gt;TL;DR&lt;/h1&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Scaling up or out is more expensive than spending a couple of hours optimising&lt;/li&gt;&#xA;&lt;li&gt;Get answers, not data&lt;/li&gt;&#xA;&lt;li&gt;Lazy load lookups&lt;/li&gt;&#xA;&lt;li&gt;Eliminate non-essential queries&lt;/li&gt;&#xA;&lt;li&gt;Don&amp;rsquo;t use SERIALIZABLE isolation&lt;/li&gt;&#xA;&lt;li&gt;Make sure auto-analyze is running and have a manual ANALYZE schedule as a safety net&lt;/li&gt;&#xA;&lt;li&gt;Denormalising is usually the wrong solution to performance issues&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;&#xA;&lt;p&gt;Welcome to this series of blog posts which will hopefully walk you through everything you need to know about improving query performance, specifically in PostgreSQL. The basic principles apply to all databases, though, even if implementation differences mean that different databases find different things painful.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

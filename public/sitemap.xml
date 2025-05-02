@@ -2,67 +2,112 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:1313/</loc>
-    <lastmod>2025-04-25T20:19:58+01:00</lastmod>
+    <loc>https://spokey.co.uk/post/always-use-a-surrogate-primary-key/</loc>
+    <lastmod>2025-04-26T11:05:30+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/post/dbre-what-is-your-mvp/</loc>
-    <lastmod>2025-04-25T20:19:58+01:00</lastmod>
+    <loc>https://spokey.co.uk/</loc>
+    <lastmod>2025-05-02T13:50:29+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/post/</loc>
-    <lastmod>2025-04-25T20:19:58+01:00</lastmod>
+    <loc>https://spokey.co.uk/categories/</loc>
+    <lastmod>2025-05-02T13:50:29+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/</loc>
+    <loc>https://spokey.co.uk/tags/database-design/</loc>
+    <lastmod>2025-04-26T11:05:30+01:00</lastmod>
+  </url><url>
+    <loc>https://spokey.co.uk/categories/databases/</loc>
+    <lastmod>2025-05-02T13:50:29+01:00</lastmod>
+  </url><url>
+    <loc>https://spokey.co.uk/categories/dbre/</loc>
+    <lastmod>2025-04-26T11:09:16+01:00</lastmod>
+  </url><url>
+    <loc>https://spokey.co.uk/tags/dbre/</loc>
+    <lastmod>2025-04-26T11:09:16+01:00</lastmod>
+  </url><url>
+    <loc>https://spokey.co.uk/categories/design/</loc>
+    <lastmod>2025-04-26T11:05:30+01:00</lastmod>
+  </url><url>
+    <loc>https://spokey.co.uk/tags/normalising/</loc>
+    <lastmod>2025-04-26T11:05:30+01:00</lastmod>
+  </url><url>
+    <loc>https://spokey.co.uk/post/</loc>
+    <lastmod>2025-05-02T13:50:29+01:00</lastmod>
+  </url><url>
+    <loc>https://spokey.co.uk/tags/</loc>
+    <lastmod>2025-05-02T13:50:29+01:00</lastmod>
+  </url><url>
+    <loc>https://spokey.co.uk/tags/ansible/</loc>
+    <lastmod>2025-04-26T10:45:27+01:00</lastmod>
+  </url><url>
+    <loc>https://spokey.co.uk/post/ansible-antipatterns/</loc>
+    <lastmod>2025-04-26T10:45:27+01:00</lastmod>
+  </url><url>
+    <loc>https://spokey.co.uk/categories/automation/</loc>
+    <lastmod>2025-04-26T11:09:16+01:00</lastmod>
+  </url><url>
+    <loc>https://spokey.co.uk/tags/automation/</loc>
+    <lastmod>2025-04-26T10:45:27+01:00</lastmod>
+  </url><url>
+    <loc>https://spokey.co.uk/tags/old-posts/</loc>
+    <lastmod>2025-04-26T10:45:27+01:00</lastmod>
+  </url><url>
+    <loc>https://spokey.co.uk/post/the-forgotten-aspect-of-dbre/</loc>
+    <lastmod>2025-04-26T10:28:35+01:00</lastmod>
+  </url><url>
+    <loc>https://spokey.co.uk/tags/upgrades/</loc>
+    <lastmod>2025-04-26T10:28:35+01:00</lastmod>
+  </url><url>
+    <loc>https://spokey.co.uk/post/dbre-what-is-your-mvp/</loc>
+    <lastmod>2025-04-26T11:09:16+01:00</lastmod>
+  </url><url>
+    <loc>https://spokey.co.uk/tags/starting/</loc>
+    <lastmod>2025-04-26T11:09:16+01:00</lastmod>
+  </url><url>
+    <loc>https://spokey.co.uk/tags/toil/</loc>
+    <lastmod>2025-04-26T11:09:16+01:00</lastmod>
+  </url><url>
+    <loc>https://spokey.co.uk/categories/performance/</loc>
+    <lastmod>2025-05-02T13:50:29+01:00</lastmod>
+  </url><url>
+    <loc>https://spokey.co.uk/tags/performance/</loc>
+    <lastmod>2025-05-02T13:50:29+01:00</lastmod>
+  </url><url>
+    <loc>https://spokey.co.uk/categories/postgresql/</loc>
+    <lastmod>2025-05-02T13:50:29+01:00</lastmod>
+  </url><url>
+    <loc>https://spokey.co.uk/tags/postgresql/</loc>
+    <lastmod>2025-05-02T13:50:29+01:00</lastmod>
+  </url><url>
+    <loc>https://spokey.co.uk/post/query-performance-improvement-part-5/</loc>
     <lastmod>2025-04-25T14:18:39+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/databases/</loc>
-    <lastmod>2025-04-25T14:18:39+01:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/categories/performance/</loc>
-    <lastmod>2025-04-25T14:18:39+01:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/tags/performance/</loc>
-    <lastmod>2025-04-25T14:18:39+01:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/categories/postgresql/</loc>
-    <lastmod>2025-04-25T14:18:39+01:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/tags/postgresql/</loc>
-    <lastmod>2025-04-25T14:18:39+01:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/post/query-performance-improvement-part-5/</loc>
-    <lastmod>2025-04-25T14:18:39+01:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/tags/</loc>
-    <lastmod>2025-04-25T14:18:39+01:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/post/query-performance-improvement-part-4/</loc>
+    <loc>https://spokey.co.uk/post/query-performance-improvement-part-4/</loc>
     <lastmod>2025-04-24T13:56:54+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/post/query-performance-improvement-part-3/</loc>
+    <loc>https://spokey.co.uk/post/query-performance-improvement-part-3/</loc>
     <lastmod>2025-04-24T16:14:33+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/bloat/</loc>
+    <loc>https://spokey.co.uk/tags/bloat/</loc>
     <lastmod>2025-04-24T12:49:17+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/post/query-performance-improvement-part-2/</loc>
+    <loc>https://spokey.co.uk/post/query-performance-improvement-part-2/</loc>
     <lastmod>2025-04-24T12:49:17+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/toast/</loc>
+    <loc>https://spokey.co.uk/tags/toast/</loc>
     <lastmod>2025-04-24T12:49:17+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/analyze/</loc>
-    <lastmod>2025-04-24T12:49:37+01:00</lastmod>
+    <loc>https://spokey.co.uk/tags/analyze/</loc>
+    <lastmod>2025-05-02T13:50:29+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/post/query-performance-improvement-part-1/</loc>
-    <lastmod>2025-04-24T12:49:37+01:00</lastmod>
+    <loc>https://spokey.co.uk/post/query-performance-improvement-part-1/</loc>
+    <lastmod>2025-05-02T13:50:29+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/serializable/</loc>
-    <lastmod>2025-04-24T12:49:37+01:00</lastmod>
+    <loc>https://spokey.co.uk/tags/serializable/</loc>
+    <lastmod>2025-05-02T13:50:29+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/post/welcome/</loc>
+    <loc>https://spokey.co.uk/post/welcome/</loc>
     <lastmod>2025-04-18T20:51:58+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/readme/</loc>
+    <loc>https://spokey.co.uk/readme/</loc>
     <lastmod>2025-04-18T23:05:01+01:00</lastmod>
   </url>
 </urlset>
