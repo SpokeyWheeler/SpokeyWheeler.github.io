@@ -1,2 +1,2 @@
-# [SpokeyWheeler.github.io](https://https://spokeywheeler.github.io/)
+# [SpokeyWheeler.github.io](https://spokeywheeler.github.io)
 Blog
