@@ -311,7 +311,7 @@ Also note that there are two forms for the creation of a covering index:
 - CREATE INDEX tab_x_y ON tab(x,y);
 - CREATE INDEX tab_x_y ON tab(x) INCLUDE (y);
 
-The first form should be used when y is a data type understood by the index. You should use this because PostgreSQL compresses duplicate values in the index, but does not as yet do this for the second form.
+The first form should be used when y is a data type understood by the index. If y is, for example, a user-defined type with no indexing support, or you are creating a B-Tree index and y is GIS data, then can only INCLUDE y. You should use the first form wherever possible because PostgreSQL compresses duplicate values in the index, but does not as yet do this for the second form.
 
 The second form should only be used for a data type that is not understood by the index, because the index stores it "as is" and does not evaluate it for compression.
 
