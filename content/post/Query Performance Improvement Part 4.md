@@ -327,4 +327,4 @@ In this post we looked at:
 
 ---
 
-Previous: [Identifying, investigting and mitigating](/post/query-performance-improvement-part-3) | Next: [Rewriting queries](/post/query-performance-improvement-part-5/)
+Previous: [Identifying, investigating and mitigating](/post/query-performance-improvement-part-3) | Next: [Rewriting queries](/post/query-performance-improvement-part-5/)
